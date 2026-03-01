@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: #2559f4;
+  --color-background-light: #f5f6f8;
+  --color-background-dark: #101422;
+  --color-surface-dark: #1b1e27;
+  --color-border-dark: #282c39;
+  
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  --background-image-dot-pattern: radial-gradient(#3b4154 1px, transparent 1px);
+  --background-size-dot-size: 20px 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #101422; 
+}
+::-webkit-scrollbar-thumb {
+  background: #282c39; 
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b4154; 
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Node connection line simulation */
+.connection-line {
+  position: absolute;
+  height: 2px;
+  background-color: #3b4154;
+  transform-origin: 0 50%;
+  z-index: 0;
+}
+
+.canvas-grid {
+  background-image: radial-gradient(#3b4154 1px, transparent 1px); /* Direct use as requested in original html */
+  background-size: 24px 24px;
 }
