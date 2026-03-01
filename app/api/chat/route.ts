@@ -1,8 +1,68 @@
 import OpenAI from 'openai';
 import type { Node } from '@xyflow/react';
 import type { WorkflowNodeData } from '@/app/types/workflow';
-import inventory from '@/app/data/inventory.json';
-import faqs      from '@/app/data/faqs.json';
+import autosRaw from '@/app/data/autos.json';
+import datesRaw from '@/app/data/dates.json';
+import faqRaw   from '@/app/data/faq.json';
+
+// ─── Typed shortcuts ──────────────────────────────────────────────────────────
+type Auto = {
+  Marca: string; Modelo: string; Año: number; Kilometraje: number;
+  Color: string; Segmento: string; Precio: number; Estado: string;
+  Ciudad: string; 'Tipo de combustible': string; Motor: number;
+  Transmisión: string; Descripción: string; Cantidad: number; URL: string;
+};
+const autos  = (autosRaw as { available_vehicles: Auto[] }).available_vehicles;
+const dates  = datesRaw as { fecha: string; slots: string[] }[];
+const faqCats = (faqRaw as { faq_agencia_autos: { categoria: string; preguntas: { id: number; pregunta: string; respuesta: string }[] }[] }).faq_agencia_autos;
+
+/**
+ * Build a compact vehicle summary to avoid blowing up the context window.
+ * Only inject fields the LLM needs to filter and recommend; skip long descriptions
+ * unless the catalogue list is small.
+ */
+function buildVehicleSummary(vehicles: Auto[]): string {
+  const rows = vehicles.map((v) => ({
+    marca: v.Marca,
+    modelo: v.Modelo,
+    año: v.Año,
+    segmento: v.Segmento,
+    precio_mxn: v.Precio,
+    color: v.Color,
+    transmision: v.Transmisión,
+    combustible: v['Tipo de combustible'],
+    km: v.Kilometraje,
+    ciudad: v.Ciudad,
+    estado: v.Estado,
+    cantidad: v.Cantidad,
+    descripcion_corta: v.Descripción.slice(0, 120) + '…',
+  }));
+  return JSON.stringify(rows, null, 2);
+}
+
+/** Build a flat FAQ list the LLM can scan quickly */
+function buildFaqSummary(): string {
+  const lines: string[] = [];
+  for (const cat of faqCats) {
+    lines.push(`### ${cat.categoria}`);
+    for (const q of cat.preguntas) {
+      lines.push(`P: ${q.pregunta}`);
+      lines.push(`R: ${q.respuesta}`);
+      lines.push('');
+    }
+  }
+  return lines.join('\n');
+}
+
+/** Build a compact agenda showing available dates and time slots */
+function buildAgendaSummary(): string {
+  return dates
+    .map((d) => {
+      const times = d.slots.map((s) => s.split('T')[1].replace(':00Z', 'h'));
+      return `${d.fecha}: ${times.join(', ')}`;
+    })
+    .join('\n');
+}
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -65,9 +125,10 @@ function buildRagContext(node: Node<WorkflowNodeData>): string {
 
   if (config.use_inventory) {
     lines.push(
-      '## INVENTARIO DE VEHÍCULOS (usa ÚNICAMENTE estos datos para responder preguntas de catálogo)',
+      `## CATÁLOGO DE VEHÍCULOS DISPONIBLES (${autos.length} unidades)`,
+      'Usa ÚNICAMENTE estos datos para responder preguntas sobre autos. No inventes modelos ni precios.',
       '```json',
-      JSON.stringify(inventory, null, 2),
+      buildVehicleSummary(autos),
       '```',
       ''
     );
@@ -75,26 +136,23 @@ function buildRagContext(node: Node<WorkflowNodeData>): string {
 
   if (config.use_faqs) {
     lines.push(
-      '## PREGUNTAS FRECUENTES (usa ÚNICAMENTE estas FAQs para responder consultas generales)',
-      '```json',
-      JSON.stringify(faqs, null, 2),
-      '```',
+      '## PREGUNTAS FRECUENTES DE LA CONCESIONARIA',
+      'Usa ÚNICAMENTE estas respuestas para consultas generales. No inventes políticas.',
+      '',
+      buildFaqSummary(),
       ''
     );
   }
 
   if (config.use_agenda) {
-    // agenda is embedded inside inventory.json
-    const slots = (inventory as { test_drive_slots?: unknown }).test_drive_slots;
-    if (slots) {
-      lines.push(
-        '## AGENDA — HORARIOS DISPONIBLES PARA PRUEBAS DE MANEJO',
-        '```json',
-        JSON.stringify(slots, null, 2),
-        '```',
-        ''
-      );
-    }
+    lines.push(
+      '## AGENDA — FECHAS Y HORARIOS DISPONIBLES PARA CITAS / PRUEBA DE MANEJO',
+      'Usa ÚNICAMENTE estos horarios al confirmar una cita. Los slots están en UTC (Guatemala = UTC-6).',
+      '```',
+      buildAgendaSummary(),
+      '```',
+      ''
+    );
   }
 
   return lines.join('\n');
@@ -158,25 +216,41 @@ function buildAgentSystemPrompt(
 /** Fallback system prompt when no orchestrator is configured */
 function buildFallbackSystemPrompt(nodes: Node<WorkflowNodeData>[]): string {
   const lines: string[] = [
-    'Eres un asistente de ventas de AutoMóvil Premium.',
+    'Eres un asesor de ventas de una concesionaria de autos.',
     'Ayuda con catálogo de vehículos, citas y consultas generales.',
     '',
   ];
 
+  // Inject RAG data from whichever specialist nodes have it enabled
   for (const node of nodes) {
-    const { type, config } = node.data;
-    if (type === 'specialist' && config.use_inventory) {
-      lines.push(buildRagContext(node));
-    }
-    if (type === 'specialist' && config.system_prompt) {
-      lines.push(config.system_prompt, '');
+    const ctx = buildRagContext(node);
+    if (ctx) lines.push(ctx);
+    if (node.data.type === 'specialist' && node.data.config.system_prompt) {
+      lines.push(node.data.config.system_prompt, '');
     }
   }
 
-  lines.push(
-    'Responde en español, sé amigable y profesional.',
-    'Nunca inventes información.'
+  // If no specialist injected data, include everything as default
+  const anyRag = nodes.some(
+    (n) => n.data.config.use_inventory || n.data.config.use_faqs || n.data.config.use_agenda
   );
+  if (!anyRag) {
+    lines.push(
+      `## CATÁLOGO DE VEHÍCULOS (${autos.length} unidades)`,
+      '```json',
+      buildVehicleSummary(autos),
+      '```',
+      '',
+      '## PREGUNTAS FRECUENTES',
+      buildFaqSummary(),
+      '',
+      '## AGENDA DE CITAS',
+      buildAgendaSummary(),
+      ''
+    );
+  }
+
+  lines.push('Responde en español, sé amigable y profesional. Nunca inventes información.');
   return lines.join('\n');
 }
 
