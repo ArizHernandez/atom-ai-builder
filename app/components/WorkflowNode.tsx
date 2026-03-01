@@ -22,6 +22,15 @@ const NODE_VISUAL_CONFIG: Record<NodeType, {
     iconColor: 'text-blue-500',
     iconName: 'input',
   },
+  telegram: {
+    gradientFrom: 'from-sky-400',
+    gradientTo: 'to-blue-500',
+    iconBg: 'bg-sky-400/10',
+    iconColor: 'text-sky-500',
+    iconName: 'send',
+    badge: '+10pts',
+    badgeColor: 'bg-sky-400/10 text-sky-500 border-sky-400/30',
+  },
   memory: {
     gradientFrom: 'from-violet-500',
     gradientTo: 'to-purple-400',
@@ -98,6 +107,23 @@ function NodeBody({ data }: { data: WorkflowNodeData }) {
     return (
       <div className="bg-slate-50 dark:bg-[#101422] rounded p-2 text-xs font-mono text-slate-600 dark:text-slate-300 mt-2">
         POST /api/v1/chat
+      </div>
+    );
+  }
+
+  if (type === 'telegram') {
+    const hasToken = !!config.system_prompt; // reused field to store token status hint
+    return (
+      <div className="mt-2 space-y-1.5">
+        <div className="bg-slate-50 dark:bg-[#101422] rounded p-2 text-xs font-mono text-slate-600 dark:text-slate-300">
+          /api/telegram/webhook
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className={`size-1.5 rounded-full ${hasToken ? 'bg-green-500' : 'bg-amber-400'}`} />
+          <span className="text-[10px] text-slate-500">
+            {hasToken ? 'Bot configurado' : 'Configura el bot token'}
+          </span>
+        </div>
       </div>
     );
   }
@@ -288,8 +314,8 @@ export function WorkflowNodeComponent({ data: rawData, selected }: NodeProps) {
       </div>
 
       {/* ── Handles by node type ─────────────────────────────────── */}
-      {data.type === 'start' && (
-        <Handle type="source" position={Position.Right} className={`${HANDLE_BASE} !bg-blue-500`} />
+      {(data.type === 'start' || data.type === 'telegram') && (
+        <Handle type="source" position={Position.Right} className={`${HANDLE_BASE} !bg-sky-500`} />
       )}
 
       {data.type === 'memory' && (

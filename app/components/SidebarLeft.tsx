@@ -15,6 +15,88 @@ type DraggableNode = {
   highlighted?: boolean;
 };
 
+const DRAGGABLE_NODES: DraggableNode[] = [
+  // ── Core Flow ──────────────────────────────────
+  {
+    type: 'start',
+    label: 'Start Trigger',
+    subtitle: 'Mensaje entrante',
+    icon: 'input',
+    iconColor: 'text-blue-500',
+    category: 'Core Flow',
+  },
+  {
+    type: 'telegram',
+    label: 'Telegram Bot',
+    subtitle: 'Canal de mensajería',
+    icon: 'send',
+    iconColor: 'text-sky-500',
+    category: 'Core Flow',
+    highlighted: true,
+  },
+  {
+    type: 'output',
+    label: 'Response Output',
+    subtitle: 'Mensaje saliente',
+    icon: 'send',
+    iconColor: 'text-green-500',
+    category: 'Core Flow',
+  },
+
+  // ── Agentes ────────────────────────────────────
+  {
+    type: 'orchestrator',
+    label: 'Agente Orquestador',
+    subtitle: 'Router de intenciones',
+    icon: 'target',
+    iconColor: 'text-[#2559f4]',
+    category: 'Agentes',
+    highlighted: true,
+  },
+  {
+    type: 'validator',
+    label: 'Agente Validador',
+    subtitle: 'Recopila datos',
+    icon: 'fact_check',
+    iconColor: 'text-amber-500',
+    category: 'Agentes',
+  },
+  {
+    type: 'specialist',
+    label: 'Agente Especialista',
+    subtitle: 'Resuelve con RAG',
+    icon: 'support_agent',
+    iconColor: 'text-purple-500',
+    category: 'Agentes',
+  },
+  {
+    type: 'generic',
+    label: 'Agente Genérico',
+    subtitle: 'Saludos / fuera de scope',
+    icon: 'forum',
+    iconColor: 'text-slate-400',
+    category: 'Agentes',
+  },
+
+  // ── Datos & Memoria ────────────────────────────
+  {
+    type: 'memory',
+    label: 'Nodo de Memoria',
+    subtitle: 'Contexto de sesión',
+    icon: 'memory',
+    iconColor: 'text-violet-500',
+    category: 'Datos & Memoria',
+  },
+  {
+    type: 'tool',
+    label: 'Tool / JSON',
+    subtitle: 'Fuente de datos estática',
+    icon: 'dataset',
+    iconColor: 'text-emerald-500',
+    category: 'Datos & Memoria',
+  },
+];
+
 function onDragStart(event: React.DragEvent<HTMLDivElement>, node: DraggableNode) {
   event.dataTransfer.setData('application/reactflow-nodetype', node.type);
   event.dataTransfer.setData('application/reactflow-nodelabel', node.label);
