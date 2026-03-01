@@ -287,14 +287,9 @@ No agregues texto adicional fuera de este formato.`,
 
 const INITIAL_EDGES: Edge[] = [
   // Flujo principal
-<<<<<<< HEAD
   { id: 'e-start-memory', source: 'node-start', target: 'node-memory', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-telegram-memory', source: 'node-telegram', target: 'node-memory', type: 'smoothstep', style: { stroke: '#0ea5e9', strokeWidth: 2 } },
   { id: 'e-memory-orch', source: 'node-memory', target: 'node-orchestrator', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-=======
-  { id: 'e-start-memory',        source: 'node-start',                 target: 'node-memory',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-telegram-memory',     source: 'node-telegram',              target: 'node-memory',                type: 'smoothstep', style: { stroke: '#0ea5e9', strokeWidth: 2 } },
-  { id: 'e-memory-orch',         source: 'node-memory',                target: 'node-orchestrator',          type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
->>>>>>> fredy
 
   // Orquestador → agentes (líneas punteadas = decisión condicional)
   { id: 'e-orch-validator', source: 'node-orchestrator', target: 'node-validator', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
