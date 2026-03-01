@@ -43,3 +43,71 @@
   background-image: radial-gradient(#3b4154 1px, transparent 1px); /* Direct use as requested in original html */
   background-size: 24px 24px;
 }
+
+/* ───────────────────────────────────────────
+   React Flow dark theme overrides
+   ─────────────────────────────────────────── */
+
+/* Edge paths */
+.react-flow__edge-path {
+  stroke: #3b4154;
+  stroke-width: 2;
+}
+
+/* Selected edge */
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #2559f4;
+}
+
+/* Connection line while dragging */
+.react-flow__connection-path {
+  stroke: #2559f4;
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+
+/* Controls panel */
+.react-flow__controls {
+  background: #1b1e27;
+  border: 1px solid #282c39;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.react-flow__controls-button {
+  background: #1b1e27;
+  border-bottom: 1px solid #282c39;
+  color: #94a3b8;
+  fill: #94a3b8;
+}
+.react-flow__controls-button:hover {
+  background: #282c39;
+}
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+.react-flow__controls-button svg {
+  fill: #94a3b8;
+}
+
+/* MiniMap (if used) */
+.react-flow__minimap {
+  background: #1b1e27;
+  border: 1px solid #282c39;
+}
+
+/* Selection box */
+.react-flow__selection {
+  background: rgba(37, 89, 244, 0.08);
+  border: 1px solid #2559f4;
+}
+
+/* Node toolbar / resize handle  */
+.react-flow__resize-control {
+  background: #2559f4;
+  border-color: #101422;
+}
+
+/* Remove default white background from the pane */
+.react-flow__pane {
+  background: transparent;
+}
