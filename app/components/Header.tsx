@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import ThemeToggle from "./ThemeToggle";
 import { useWorkflowStore } from '@/app/store/workflowStore';
+import { Button } from '@/app/components/ui/Button';
 
 export default function Header() {
     const { nodes, edges, setWorkflow, isPlaygroundVisible, setIsPlaygroundVisible, resetMessages } = useWorkflowStore();
@@ -59,35 +60,37 @@ export default function Header() {
                     <span className="material-symbols-outlined text-[20px] mr-2">save</span>
                     <span className="text-sm font-bold">Save Draft</span>
                 </button> */}
-                <button
+                <Button
                     onClick={() => {
                         resetMessages();
                         setIsPlaygroundVisible(!isPlaygroundVisible);
                     }}
-                    className={`flex items-center justify-center rounded-lg h-9 px-3 transition-colors shadow-lg mr-2 ${isPlaygroundVisible
-                        ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
-                        : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20'
-                        }`}
+                    variant={isPlaygroundVisible ? 'warning' : 'success'}
+                    icon={isPlaygroundVisible ? 'stop' : 'play_arrow'}
+                    className="mr-2"
                 >
-                    <span className="material-symbols-outlined text-[20px] mr-2">
-                        {isPlaygroundVisible ? 'stop' : 'play_arrow'}
-                    </span>
-                    <span className="text-sm font-bold">
-                        {isPlaygroundVisible ? 'Stop' : 'Execute'}
-                    </span>
-                </button>
+                    {isPlaygroundVisible ? 'Stop' : 'Execute'}
+                </Button>
                 {/* <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
                     <span className="material-symbols-outlined text-[20px] mr-2">rocket_launch</span>
                     <span className="text-sm font-bold">Deploy Agent</span>
                 </button> */}
                 <div className="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
                 <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
-                <button onClick={handleImportClick} className="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors" title="Import Workflow">
-                    <span className="material-symbols-outlined text-[20px]">upload</span>
-                </button>
-                <button onClick={handleExport} className="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors" title="Export Workflow">
-                    <span className="material-symbols-outlined text-[20px]">download</span>
-                </button>
+                <Button
+                    variant="secondary"
+                    size="icon"
+                    icon="upload"
+                    onClick={handleImportClick}
+                    title="Import Workflow"
+                />
+                <Button
+                    variant="secondary"
+                    size="icon"
+                    icon="download"
+                    onClick={handleExport}
+                    title="Export Workflow"
+                />
                 <ThemeToggle />
                 {/* <button className="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
                     <span className="material-symbols-outlined text-[20px]">settings</span>

@@ -5,6 +5,7 @@ import type { KeyboardEvent } from 'react';
 import { useChat } from '@/app/hooks/useChat';
 import { useWorkflowStore } from '@/app/store/workflowStore';
 import PropertiesPanel from './PropertiesPanel';
+import { Button } from '@/app/components/ui/Button';
 
 // ─── Playground chat ───────────────────────────────────────────────────────────
 function PlaygroundChat() {
@@ -39,13 +40,14 @@ function PlaygroundChat() {
           <span className="material-symbols-outlined text-[#2559f4] text-[20px]">science</span>
           <h2 className="text-slate-900 dark:text-white font-bold text-sm">Playground</h2>
         </div>
-        <button
+        <Button
           onClick={resetMessages}
           title="Limpiar chat"
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded text-slate-500 hover:text-[#2559f4] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[18px]">refresh</span>
-        </button>
+          variant="ghost"
+          size="icon"
+          icon="refresh"
+          className="p-1.5"
+        />
       </div>
 
       {/* Messages */}
@@ -145,15 +147,17 @@ function PlaygroundChat() {
             placeholder={isStreaming ? 'Esperando respuesta...' : 'Escribe un mensaje...'}
             rows={2}
           />
-          <button
+          <Button
             onClick={handleSend}
             disabled={isStreaming || !inputValue.trim()}
-            className="absolute bottom-2 right-2 p-2 bg-[#2559f4] hover:bg-[#2559f4]/90 text-white rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="primary"
+            size="icon"
+            className="absolute bottom-2 right-2 h-[34px] w-[34px] rounded-lg shadow-md hover:shadow-lg disabled:cursor-not-allowed"
           >
             <span className="material-symbols-outlined text-[20px] block transform rotate-[-45deg] translate-x-px -translate-y-px">
               send
             </span>
-          </button>
+          </Button>
         </div>
         <p className="text-[10px] text-slate-400 font-medium mt-2 px-1">
           {isStreaming ? 'Streaming response…' : 'Enter para enviar · Shift+Enter para nueva línea'}
@@ -174,26 +178,27 @@ export default function SidebarRight() {
   if (!isExpanded) {
     return (
       <aside className="w-12 flex flex-col items-center py-4 border-l border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-20 shadow-xl shrink-0">
-        <button
+        <Button
           onClick={() => setIsExpanded(true)}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded-lg text-slate-500 hover:text-[#2559f4] transition-colors"
+          variant="ghost"
+          size="icon"
+          icon="keyboard_double_arrow_left"
           title="Expandir"
-        >
-          <span className="material-symbols-outlined text-[20px]">keyboard_double_arrow_left</span>
-        </button>
+        />
       </aside>
     );
   }
 
   return (
     <aside className="relative w-[360px] flex flex-col border-l border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-20 shadow-xl shrink-0">
-      <button
+      <Button
         onClick={() => setIsExpanded(false)}
-        className="absolute top-4 -left-8 w-8 h-8 flex items-center justify-center bg-white dark:bg-[#1b1e27] border border-r-0 border-slate-200 dark:border-[#282c39] rounded-l-lg shadow-sm text-slate-500 hover:text-[#2559f4] transition-colors z-30"
+        variant="outline"
+        size="icon"
+        icon="keyboard_double_arrow_right"
         title="Colapsar"
-      >
-        <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_right</span>
-      </button>
+        className="absolute top-4 -left-8 !w-8 !h-8 bg-white dark:bg-[#1b1e27] border-r-0 rounded-r-none rounded-l-lg shadow-sm text-slate-500 hover:text-[#2559f4] z-30"
+      />
 
       {selectedNodeId ? (
         /* Properties panel fills the whole sidebar when a node is selected */
@@ -213,16 +218,17 @@ export default function SidebarRight() {
           </div>
           <h3 className="text-slate-700 dark:text-slate-300 font-bold mb-2">Playground Inactivo</h3>
           <p className="text-sm px-4">Haz clic en <strong>Execute</strong> para iniciar una sesión de prueba.</p>
-          <button
+          <Button
             onClick={() => {
               resetMessages();
               setIsPlaygroundVisible(true);
             }}
-            className="mt-6 flex items-center justify-center rounded-lg h-9 px-4 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors shadow-md shadow-emerald-500/20"
+            variant="success"
+            icon="play_arrow"
+            className="mt-6"
           >
-            <span className="material-symbols-outlined text-[20px] mr-2">play_arrow</span>
-            <span className="text-sm font-bold">Execute</span>
-          </button>
+            Execute
+          </Button>
         </div>
       )}
     </aside>

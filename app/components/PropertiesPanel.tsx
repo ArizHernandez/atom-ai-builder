@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWorkflowStore } from '@/app/store/workflowStore';
 import type { NodeType, RagFile } from '@/app/types/workflow';
+import { Button } from '@/app/components/ui/Button';
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 const TYPE_LABEL: Record<NodeType, string> = {
@@ -14,6 +15,7 @@ const TYPE_LABEL: Record<NodeType, string> = {
   generic: 'Agente Genérico',
   tool: 'Tool / JSON',
   output: 'Output',
+  telegram: 'Telegram',
 };
 
 const TYPE_COLOR: Record<NodeType, string> = {
@@ -25,6 +27,7 @@ const TYPE_COLOR: Record<NodeType, string> = {
   generic: 'text-slate-400  bg-slate-500/10  border-slate-500/20',
   tool: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
   output: 'text-green-500  bg-green-500/10  border-green-500/20',
+  telegram: 'text-[#0088cc]  bg-[#0088cc]/10  border-[#0088cc]/20',
 };
 
 const TYPE_ICON: Record<NodeType, string> = {
@@ -36,6 +39,7 @@ const TYPE_ICON: Record<NodeType, string> = {
   generic: 'forum',
   tool: 'dataset',
   output: 'send',
+  telegram: 'send',
 };
 
 // ─── Reusable field styles ────────────────────────────────────────────────────
@@ -156,13 +160,14 @@ export default function PropertiesPanel() {
     <div className="flex flex-col h-full">
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-2 p-4 border-b border-slate-200 dark:border-[#282c39] shrink-0">
-        <button
+        <Button
           onClick={() => setSelectedNode(null)}
-          className="p-1.5 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded text-slate-500 hover:text-[#2559f4] transition-colors"
+          variant="ghost"
+          size="icon"
+          icon="arrow_back"
           title="Volver al Playground"
-        >
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-        </button>
+          className="p-1.5"
+        />
         <div>
           <h2 className="text-slate-900 dark:text-white font-bold text-sm">Propiedades del Nodo</h2>
           <p className="text-[10px] text-slate-400 font-mono">{node.id}</p>
@@ -318,14 +323,15 @@ export default function PropertiesPanel() {
             <SectionTitle>Add-ons</SectionTitle>
 
             {!hasRagAddon ? (
-              <button
-                type="button"
+              <Button
                 onClick={() => setHasRagAddon(true)}
-                className="w-full flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-slate-300 dark:border-[#282c39] text-slate-500 hover:text-[#2559f4] hover:border-[#2559f4]/50 hover:bg-[#2559f4]/5 transition-colors text-sm font-medium"
+                variant="outline"
+                icon="add_circle"
+                fullWidth
+                className="border-dashed text-slate-500 hover:text-[#2559f4] hover:bg-[#2559f4]/5"
               >
-                <span className="material-symbols-outlined text-[18px]">add_circle</span>
                 Agregar RAG Knowledge Base
-              </button>
+              </Button>
             ) : (
               <div className="p-3 bg-white dark:bg-[#1b1e27] border border-[#2559f4]/30 rounded-lg shadow-sm">
                 <div className="flex items-center justify-between mb-3">
@@ -335,17 +341,17 @@ export default function PropertiesPanel() {
                     </div>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">RAG Knowledge Base</span>
                   </div>
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => {
                       setHasRagAddon(false);
                       setRagFiles([]);
                     }}
-                    className="text-slate-400 hover:text-red-500 transition-colors"
+                    variant="ghost"
+                    size="icon"
+                    icon="delete"
                     title="Eliminar Add-on"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">delete</span>
-                  </button>
+                    className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                  />
                 </div>
 
                 {ragFiles.length === 0 ? (
@@ -389,13 +395,13 @@ export default function PropertiesPanel() {
                           <span className="text-xs text-slate-700 dark:text-slate-300 truncate font-medium">{f.name}</span>
                           {f.size && <span className="text-[10px] text-slate-400 shrink-0">({Math.round(f.size / 1024)} KB)</span>}
                         </div>
-                        <button
-                          type="button"
+                        <Button
                           onClick={() => setRagFiles(ragFiles.filter((_, k) => k !== idx))}
-                          className="text-slate-400 hover:text-red-500 transition-colors shrink-0 ml-2"
-                        >
-                          <span className="material-symbols-outlined text-[14px]">close</span>
-                        </button>
+                          variant="ghost"
+                          size="icon"
+                          icon="close"
+                          className="h-6 w-6 text-slate-400 hover:text-red-500 ml-2"
+                        />
                       </div>
                     ))}
                   </div>
@@ -410,18 +416,14 @@ export default function PropertiesPanel() {
       {/* ── Save button ─────────────────────────────────────────────────── */}
       {!isReadOnly && (
         <div className="p-4 border-t border-slate-200 dark:border-[#282c39] shrink-0">
-          <button
+          <Button
             onClick={handleSave}
-            className={`w-full flex items-center justify-center gap-2 h-9 rounded-lg text-sm font-bold transition-all ${saved
-              ? 'bg-green-500 text-white'
-              : 'bg-[#2559f4] hover:bg-[#2559f4]/90 text-white shadow-lg shadow-[#2559f4]/20'
-              }`}
+            variant={saved ? 'success' : 'primary'}
+            icon={saved ? 'check_circle' : 'save'}
+            fullWidth
           >
-            <span className="material-symbols-outlined text-[18px]">
-              {saved ? 'check_circle' : 'save'}
-            </span>
             {saved ? '¡Guardado!' : 'Guardar cambios'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

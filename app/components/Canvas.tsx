@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 import { useWorkflowStore } from '@/app/store/workflowStore';
 import { WorkflowNodeComponent } from './WorkflowNode';
 import type { WorkflowNodeData, NodeType } from '@/app/types/workflow';
+import { Button } from '@/app/components/ui/Button';
 
 // Register all node types — all share the same custom component
 const nodeTypes: NodeTypes = {
@@ -109,26 +110,15 @@ function FlowCanvas() {
 
       {/* Generation Trigger Button */}
       <div className="absolute top-4 right-4 z-10">
-        <button
+        <Button
           onClick={generateMockWorkflow}
           disabled={isGenerating}
-          className={`px-4 py-2 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 ${isGenerating
-            ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-            : 'bg-[#2559f4] hover:bg-blue-600 text-white shadow-blue-500/25 cursor-pointer'
-            }`}
+          variant={isGenerating ? 'secondary' : 'primary'}
+          icon={isGenerating ? 'refresh' : 'magic_button'}
+          isLoading={isGenerating}
         >
-          {isGenerating ? (
-            <>
-              <span className="material-symbols-outlined text-[18px] animate-spin">refresh</span>
-              Generando...
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined text-[18px]">magic_button</span>
-              Generar Nodos
-            </>
-          )}
-        </button>
+          {isGenerating ? 'Generando...' : 'Generar Nodos'}
+        </Button>
       </div>
 
       <ReactFlow

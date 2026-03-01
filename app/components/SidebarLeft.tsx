@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { NodeType } from '@/app/types/workflow';
+import { Button } from '@/app/components/ui/Button';
 
 type DraggableNode = {
   id?: string;
@@ -10,7 +11,7 @@ type DraggableNode = {
   subtitle: string;
   icon: string;
   iconColor: string;
-  category: 'Core Flow' | 'Agentes' | 'Datos & Memoria';
+  category: 'Core Flow' | 'Agentes' | 'Datos & Memoria' | 'Extensions';
   highlighted?: boolean;
 };
 
@@ -21,7 +22,7 @@ function onDragStart(event: React.DragEvent<HTMLDivElement>, node: DraggableNode
   event.dataTransfer.effectAllowed = 'move';
 }
 
-const CATEGORIES: DraggableNode['category'][] = ['Core Flow', 'Agentes', 'Datos & Memoria'];
+const CATEGORIES: DraggableNode['category'][] = ['Core Flow', 'Agentes', 'Datos & Memoria', "Extensions"];
 
 export default function SidebarLeft({ initialNodes = [] }: { initialNodes: DraggableNode[] }) {
   const [search, setSearch] = useState('');
@@ -36,13 +37,13 @@ export default function SidebarLeft({ initialNodes = [] }: { initialNodes: Dragg
   if (!isExpanded) {
     return (
       <aside className="w-12 flex flex-col items-center py-4 border-r border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-10 shrink-0">
-        <button
+        <Button
           onClick={() => setIsExpanded(true)}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded-lg text-slate-500 hover:text-[#2559f4] transition-colors"
+          variant="ghost"
+          size="icon"
+          icon="keyboard_double_arrow_right"
           title="Expandir"
-        >
-          <span className="material-symbols-outlined text-[20px]">keyboard_double_arrow_right</span>
-        </button>
+        />
       </aside>
     );
   }
@@ -55,13 +56,14 @@ export default function SidebarLeft({ initialNodes = [] }: { initialNodes: Dragg
           <h1 className="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider">
             Node Library
           </h1>
-          <button
+          <Button
             onClick={() => setIsExpanded(false)}
-            className="p-1 -mt-1 -mr-1 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded text-slate-500 hover:text-[#2559f4] transition-colors"
+            variant="ghost"
+            size="icon"
+            icon="keyboard_double_arrow_left"
             title="Colapsar"
-          >
-            <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
-          </button>
+            className="-mt-1 -mr-1"
+          />
         </div>
         <p className="text-slate-500 dark:text-slate-400 text-xs">Arrastra al canvas</p>
         <div className="mt-3 relative">
