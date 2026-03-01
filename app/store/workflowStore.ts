@@ -86,7 +86,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'specialist_catalogo',
         system_prompt:
-          'Eres el Especialista de Catálogo de AutoMóvil Premium. Filtra el inventario según el perfil del cliente y recomienda opciones personalizadas con precio, características y plan de financiamiento. Sé conciso y usa formato claro.',
+          'Eres el Especialista de Catálogo. Filtra el inventario según el perfil del cliente (segmento: SUV/Sedán/Hatchback/Pickup, precio máximo, transmisión, tipo de combustible) y recomienda máximo 3 opciones. Para cada opción muestra: Marca Modelo Año, Precio en MXN, Ciudad/Estado, Kilometraje y una razón breve por qué se ajusta. Sé conciso y usa formato de lista.',
         use_inventory: true,
       },
     },
@@ -103,8 +103,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'specialist_citas',
         system_prompt:
-          'Eres el Especialista de Citas de AutoMóvil Premium. Ayudas a agendar pruebas de manejo y citas con asesores. Consulta los horarios disponibles y confirma la cita con los datos del cliente. Sé amigable y eficiente.',
-        use_inventory: true,
+          'Eres el Especialista de Citas. Ayuda al cliente a agendar una prueba de manejo o cita con asesor. Usa los horarios disponibles de la agenda. Confirma: nombre del cliente, fecha, hora (en hora local Guatemala UTC-6), vehículo de interés y motivo. Resume la cita antes de confirmar.',
         use_agenda: true,
       },
     },
