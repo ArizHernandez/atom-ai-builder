@@ -144,7 +144,7 @@ export default function PropertiesPanel() {
   const hasPrompt = type === 'orchestrator' || type === 'specialist' || type === 'generic';
   const hasDescription = type === 'validator';
   const hasRag = type === 'specialist' || type === 'generic' || type === 'orchestrator';
-  const isReadOnly = type === 'start' || type === 'output' || type === 'memory' || type === 'telegram';
+  const isReadOnly = type === 'start' || type === 'output' || type === 'memory';
 
   const handleSave = () => {
     updateNodeMeta(node.id, { label, subtitle });
