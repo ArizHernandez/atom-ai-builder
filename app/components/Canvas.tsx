@@ -18,16 +18,15 @@ import { Button } from '@/app/components/ui/Button';
 
 // Register all node types — all share the same custom component
 const nodeTypes: NodeTypes = {
-  start:        WorkflowNodeComponent,
-  telegram:     WorkflowNodeComponent,
-  memory:       WorkflowNodeComponent,
+  start: WorkflowNodeComponent,
+  memory: WorkflowNodeComponent,
   orchestrator: WorkflowNodeComponent,
   validator: WorkflowNodeComponent,
   specialist: WorkflowNodeComponent,
   generic: WorkflowNodeComponent,
   tool: WorkflowNodeComponent,
   output: WorkflowNodeComponent,
-  telegram: WorkflowNodeComponent,
+  extension: WorkflowNodeComponent,
 };
 
 function FlowCanvas() {
