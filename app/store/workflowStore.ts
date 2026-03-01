@@ -193,6 +193,9 @@ interface WorkflowStore {
   // Generation
   isGenerating: boolean;
   generateMockWorkflow: () => void;
+
+  // Import/Export
+  setWorkflow: (nodes: Node<WorkflowNodeData>[], edges: Edge[]) => void;
 }
 
 // ─── Store implementation ──────────────────────────────────────────────────────
@@ -302,4 +305,6 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
 
     setTimeout(addNextNode, 500);
   },
+
+  setWorkflow: (nodes, edges) => set({ nodes, edges }),
 }));
