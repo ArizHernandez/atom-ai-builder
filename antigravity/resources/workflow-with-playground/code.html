@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atom AI Builder Workflow Canvas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2559f4",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101422",
+                        "surface-dark": "#1b1e27",
+                        "border-dark": "#282c39",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'dot-pattern': 'radial-gradient(#3b4154 1px, transparent 1px)',
+                    },
+                    backgroundSize: {
+                        'dot-size': '20px 20px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101422; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #282c39; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b4154; 
+        }
+        
+        /* Node connection line simulation */
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background-color: #3b4154;
+            transform-origin: 0 50%;
+            z-index: 0;
+        }
+
+        .canvas-grid {
+            background-image: radial-gradient(#3b4154 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex shrink-0 items-center justify-between border-b border-solid border-slate-200 dark:border-border-dark px-6 py-3 bg-white dark:bg-background-dark z-20">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">hub</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">Atom AI Builder</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-lg h-9 px-3 bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px] mr-2">save</span>
+<span class="text-sm font-bold">Save Draft</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-9 px-3 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px] mr-2">rocket_launch</span>
+<span class="text-sm font-bold">Deploy Agent</span>
+</button>
+<div class="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
+<button class="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<button class="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</button>
+<button class="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<div class="ml-2 size-9 rounded-full bg-slate-200 dark:bg-border-dark overflow-hidden ring-2 ring-slate-100 dark:ring-border-dark" data-alt="User Avatar">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGpbzWHjsQKtMTaRr4-fQwKKG7lvnqY2ZUXEb3v6e9qLNzrLN10CVX3qdXb97xiuS_DV5ZzCXEEG7-86a8M-QQBCk3ymlHUpnnznHnUNVzVF5gZVC-z0F-7cOaSJ9GGsq7ZOXesPGXPIXmT6qsJczSZ5Zf6PsoaOULQAK9KE_o5DyLm6Zm64A6vJK1_eDGSubNXrrnk8K9V0nGoazzkJXLRZ_zjgGVG6lKuIz5sy_Z9XIi3nd4jfcTwK4GAKwLyanPE6xUQG5vpoQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Nodes -->
+<aside class="w-64 flex flex-col border-r border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark z-10 shrink-0">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark">
+<h1 class="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider mb-1">Node Library</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Drag to canvas</p>
+<div class="mt-3 relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="w-full bg-slate-50 dark:bg-background-dark border-none rounded text-xs py-2 pl-8 pr-3 text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:ring-1 focus:ring-primary" placeholder="Search nodes..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<!-- Node Category: Logic -->
+<div class="px-2 py-2">
+<p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 pl-1">Logic &amp; Flow</p>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">psychology</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Memory</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 cursor-grab active:cursor-grabbing group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">schema</span>
+<span class="text-slate-900 dark:text-white text-sm font-medium">Orchestrator</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-teal-500 group-hover:scale-110 transition-transform">fact_check</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Validator</span>
+</div>
+</div>
+</div>
+<!-- Node Category: Agents -->
+<div class="px-2 py-2 border-t border-slate-100 dark:border-border-dark">
+<p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 pl-1">Agents</p>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-purple-500 group-hover:scale-110 transition-transform">manage_accounts</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Specialist</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-orange-500 group-hover:scale-110 transition-transform">extension</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Generic</span>
+</div>
+</div>
+</div>
+<!-- Node Category: Tools -->
+<div class="px-2 py-2 border-t border-slate-100 dark:border-border-dark">
+<p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 pl-1">Integrations</p>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-green-500 group-hover:scale-110 transition-transform">webhook</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Webhook</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-border-dark cursor-grab active:cursor-grabbing group transition-colors">
+<span class="material-symbols-outlined text-blue-500 group-hover:scale-110 transition-transform">database</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Database</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark/50">
+<div class="flex items-center justify-between text-xs text-slate-500">
+<span>v2.4.0</span>
+<a class="hover:text-primary" href="#">Documentation</a>
+</div>
+</div>
+</aside>
+<!-- Center: Workflow Canvas -->
+<main class="flex-1 relative overflow-hidden bg-slate-50 dark:bg-background-dark canvas-grid flex flex-col">
+<!-- Canvas Toolbar (Floating) -->
+<div class="absolute top-4 left-4 right-4 flex justify-between pointer-events-none z-10">
+<div class="flex flex-col gap-1 pointer-events-auto">
+<h1 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Customer Support Workflow</h1>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
+<span class="inline-block size-2 rounded-full bg-green-500"></span>
+<span>Active</span>
+<span class="mx-1">•</span>
+<span>Last edited 2m ago</span>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-white dark:bg-surface-dark p-1.5 rounded-lg shadow-lg border border-slate-200 dark:border-border-dark pointer-events-auto">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-border-dark rounded text-slate-600 dark:text-slate-300 transition-colors" title="Zoom Out">
+<span class="material-symbols-outlined text-[20px]">remove</span>
+</button>
+<span class="text-xs font-mono min-w-[3ch] text-center text-slate-600 dark:text-slate-300">100%</span>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-border-dark rounded text-slate-600 dark:text-slate-300 transition-colors" title="Zoom In">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<div class="w-px h-4 bg-slate-200 dark:bg-border-dark mx-1"></div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-border-dark rounded text-slate-600 dark:text-slate-300 transition-colors" title="Fit to Screen">
+<span class="material-symbols-outlined text-[20px]">fit_screen</span>
+</button>
+</div>
+</div>
+<!-- Nodes Container (Simulated) -->
+<div class="absolute inset-0 overflow-auto">
+<div class="relative w-[2000px] h-[2000px] p-20">
+<!-- Connection Lines (SVG for better control usually, but CSS simulation here) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+<!-- Line Start to Process -->
+<path class="dark:stroke-[#3b4154] stroke-slate-300" d="M380 250 C 480 250, 480 250, 580 250" fill="none" stroke="#3b4154" stroke-width="2"></path>
+<!-- Line Process to End -->
+<path class="dark:stroke-[#3b4154] stroke-slate-300" d="M880 250 C 980 250, 980 250, 1080 250" fill="none" stroke="#3b4154" stroke-width="2"></path>
+<!-- Line Process to Specialist -->
+<path class="dark:stroke-[#3b4154] stroke-slate-300" d="M730 320 C 730 380, 730 380, 730 440" fill="none" stroke="#3b4154" stroke-width="2"></path>
+</svg>
+<!-- Start Node -->
+<div class="absolute left-[100px] top-[200px] w-[280px] bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark shadow-xl z-10 hover:border-primary/50 transition-colors group">
+<div class="bg-gradient-to-r from-blue-600 to-blue-500 h-1.5 w-full rounded-t-xl"></div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</div>
+<div>
+<h3 class="text-slate-900 dark:text-white text-sm font-bold">Start Trigger</h3>
+<p class="text-slate-500 text-xs">Incoming Webhook</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-white"><span class="material-symbols-outlined text-[18px]">more_horiz</span></button>
+</div>
+<div class="bg-slate-50 dark:bg-background-dark rounded p-2 text-xs font-mono text-slate-600 dark:text-slate-300 mb-2">
+                                POST /api/v1/support
+                            </div>
+</div>
+<!-- Output Port -->
+<div class="absolute -right-1.5 top-1/2 -translate-y-1/2 size-3 bg-blue-500 rounded-full border-2 border-white dark:border-background-dark cursor-crosshair hover:scale-125 transition-transform"></div>
+</div>
+<!-- Process Node -->
+<div class="absolute left-[580px] top-[180px] w-[300px] bg-white dark:bg-surface-dark rounded-xl border border-primary ring-2 ring-primary/20 shadow-2xl shadow-primary/10 z-10">
+<div class="bg-gradient-to-r from-primary to-purple-500 h-1.5 w-full rounded-t-xl"></div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">neurology</span>
+</div>
+<div>
+<h3 class="text-slate-900 dark:text-white text-sm font-bold">Intent Analysis</h3>
+<p class="text-slate-500 text-xs">LLM Processor</p>
+</div>
+</div>
+<span class="bg-green-500/10 text-green-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-green-500/20">Active</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs text-slate-400">
+<span>Model</span>
+<span class="text-slate-200">GPT-4 Turbo</span>
+</div>
+<div class="h-1 w-full bg-slate-200 dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-500">
+<span>Temperature: 0.7</span>
+<span>Tokens: 450</span>
+</div>
+</div>
+</div>
+<!-- Input Port -->
+<div class="absolute -left-1.5 top-1/2 -translate-y-1/2 size-3 bg-slate-400 rounded-full border-2 border-white dark:border-background-dark cursor-crosshair"></div>
+<!-- Output Port (Main) -->
+<div class="absolute -right-1.5 top-1/2 -translate-y-1/2 size-3 bg-primary rounded-full border-2 border-white dark:border-background-dark cursor-crosshair hover:scale-125 transition-transform"></div>
+<!-- Output Port (Secondary) -->
+<div class="absolute left-1/2 -bottom-1.5 -translate-x-1/2 size-3 bg-purple-500 rounded-full border-2 border-white dark:border-background-dark cursor-crosshair hover:scale-125 transition-transform"></div>
+</div>
+<!-- Specialist Node -->
+<div class="absolute left-[580px] top-[440px] w-[280px] bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark shadow-xl z-10 hover:border-primary/50 transition-colors group">
+<div class="bg-gradient-to-r from-purple-500 to-pink-500 h-1.5 w-full rounded-t-xl"></div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div>
+<h3 class="text-slate-900 dark:text-white text-sm font-bold">Billing Agent</h3>
+<p class="text-slate-500 text-xs">Specialist</p>
+</div>
+</div>
+</div>
+<p class="text-xs text-slate-400 leading-relaxed">Handles refunds and invoice queries.</p>
+</div>
+<!-- Input Port -->
+<div class="absolute left-1/2 -top-1.5 -translate-x-1/2 size-3 bg-slate-400 rounded-full border-2 border-white dark:border-background-dark cursor-crosshair"></div>
+</div>
+<!-- End Node -->
+<div class="absolute left-[1080px] top-[200px] w-[280px] bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark shadow-xl z-10 hover:border-primary/50 transition-colors group">
+<div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-1.5 w-full rounded-t-xl"></div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</div>
+<div>
+<h3 class="text-slate-900 dark:text-white text-sm font-bold">Response</h3>
+<p class="text-slate-500 text-xs">Slack Notification</p>
+</div>
+</div>
+</div>
+<div class="flex -space-x-2 overflow-hidden mt-2">
+<img alt="User 1" class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCw1NA1mrMxTJfjPMrj97IJhDQtWe5Ai7Qa8X5awr761Ccxirmc46cB1wQorZM1bJ0pJy6oJxKGdntwiKm8lbZeFCvjAoGzqxBadhW9fqM0lHeESHO81SXRpa6cnocs6_EFrxc7SIm9pKblhsZQe95mG_ugZYaNs65P6J3eysiFsfGt8VSBLVznNddmkcSTi_RL41CIofPfeYsDKmdsVXmwm1Wc6NvPJzAN0W414PXVSFnY8SiVBfUT1lUId-gz2xQ4px7VWm0wIY"/>
+<img alt="User 2" class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw709rVC1Z5CRgs9I39icWjmdtguOfMd3rVpr7dVIYVS37Zv4chCP88EV1FcXtCUjssLyUZnWE99866ttE2GNkm2TXsGIF-XswgwD0HELTc6pYI0Cb4sZSDEt5ZT59DJO5SFc_vAx4b53mrnY_tBC2_wnEyp_okn4n4CdIjdS_EwOgwsCr4cJfOSfFD5bfbqxRbVpFax486mlpSgFW3OfgVwCQtxtif6mCt_OvqmsvS1S1JLvYhCeRSJAzch_PN6MXhshkjZxO560"/>
+</div>
+</div>
+<!-- Input Port -->
+<div class="absolute -left-1.5 top-1/2 -translate-y-1/2 size-3 bg-slate-400 rounded-full border-2 border-white dark:border-background-dark cursor-crosshair"></div>
+</div>
+</div>
+</div>
+<!-- Context Menu (Simulated, hidden by default but shown for structure) -->
+<!-- <div class="absolute top-[300px] left-[400px] w-48 bg-surface-dark border border-border-dark rounded-lg shadow-xl py-1 z-50 hidden">
+                <button class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-primary hover:text-white">Edit Node</button>
+                <button class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-primary hover:text-white">Duplicate</button>
+                <div class="h-px bg-border-dark my-1"></div>
+                <button class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20">Delete</button>
+            </div> -->
+</main>
+<!-- Right Sidebar: Playground -->
+<aside class="w-[360px] flex flex-col border-l border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark z-20 shadow-xl shrink-0">
+<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-border-dark">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">science</span>
+<h2 class="text-slate-900 dark:text-white font-bold text-sm">Playground</h2>
+</div>
+<div class="flex gap-1">
+<button class="p-1.5 hover:bg-slate-100 dark:hover:bg-border-dark rounded text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+<button class="p-1.5 hover:bg-slate-100 dark:hover:bg-border-dark rounded text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 flex flex-col bg-slate-50 dark:bg-background-dark/50 relative">
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- System Message -->
+<div class="flex justify-center">
+<span class="text-[10px] text-slate-400 bg-slate-100 dark:bg-border-dark px-2 py-1 rounded-full">Session started at 10:42 AM</span>
+</div>
+<!-- Bot Message -->
+<div class="flex gap-3">
+<div class="size-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[16px]">smart_toy</span>
+</div>
+<div class="flex flex-col gap-1 max-w-[85%]">
+<span class="text-[10px] text-slate-400 font-medium ml-1">Atom AI</span>
+<div class="p-3 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-2xl rounded-tl-none text-sm text-slate-700 dark:text-slate-200 shadow-sm leading-relaxed">
+                                Hello! I'm ready to test your workflow. How can I assist you today?
+                            </div>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-3 flex-row-reverse">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-border-dark flex items-center justify-center shrink-0 overflow-hidden" data-alt="User Avatar Small">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS3AI8dfRY6eG2J6gLUYGz_5uEbmvnPZNPySveS9TtYNULy-d89-wD_2TWc5f6BytegtiinnyYo42F7nKykWcKT7zmf2e54MQAIS5cHL1-1HiXezDEDi1eJY_kevRPrMV5-SJ6Dn3bWdSDmqnBGiPFxqNRXup4uhpksbHABvaCOG8dY8cmCIWdUdZBhqZ-q_x8SMuvckrVThD9WY9bT9vd3fIKR-6QZwdJDtHb1cGAsX42XCS2COlv1xFKrE6Nvbl6P5Xijug1-aY"/>
+</div>
+<div class="flex flex-col gap-1 items-end max-w-[85%]">
+<span class="text-[10px] text-slate-400 font-medium mr-1">You</span>
+<div class="p-3 bg-primary text-white rounded-2xl rounded-tr-none text-sm shadow-sm leading-relaxed">
+                                I need to check the status of my refund #REF-2024.
+                            </div>
+</div>
+</div>
+<!-- Bot Thinking State -->
+<div class="flex gap-3 animate-pulse">
+<div class="size-8 rounded-full bg-primary/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]">more_horiz</span>
+</div>
+<div class="flex flex-col gap-1 max-w-[85%]">
+<div class="flex items-center gap-2 ml-1">
+<span class="text-[10px] text-primary font-medium">Processing</span>
+<span class="size-1.5 bg-primary rounded-full animate-ping"></span>
+</div>
+<div class="p-3 bg-white dark:bg-surface-dark border border-primary/30 rounded-2xl rounded-tl-none text-sm text-slate-500 dark:text-slate-400 shadow-sm italic border-dashed">
+                                Analyzing intent and routing to billing specialist...
+                            </div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-border-dark">
+<div class="relative">
+<textarea class="w-full bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none pr-12 scrollbar-hide shadow-inner" placeholder="Type a message..." rows="2"></textarea>
+<button class="absolute bottom-2 right-2 p-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+<span class="material-symbols-outlined text-[20px] block transform rotate-[-45deg] translate-x-px -translate-y-px">send</span>
+</button>
+</div>
+<div class="flex justify-between items-center mt-3 px-1">
+<div class="flex gap-2">
+<button class="text-slate-400 hover:text-primary transition-colors" title="Attach file">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<button class="text-slate-400 hover:text-primary transition-colors" title="Voice input">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+<div class="text-[10px] text-slate-400 font-medium">
+                            Press Enter to send
+                        </div>
+</div>
+</div>
+</div>
+<!-- Debug Panel (Collapsible) -->
+<div class="border-t border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-background-dark/30">
+<button class="w-full flex items-center justify-between p-3 text-xs font-semibold text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-border-dark transition-colors">
+<span>Debug Console</span>
+<span class="material-symbols-outlined text-[16px]">expand_less</span>
+</button>
+</div>
+</aside>
+</div>
+</body></html>

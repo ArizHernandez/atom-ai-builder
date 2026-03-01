@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atom AI Builder Property Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+        }
+        :root {
+            --primary: #0070FF;
+            --bg-dark: #0A0A0B;
+            --surface-dark: #121214;
+            --border-dark: #1F1F23;
+            --glass: rgba(18, 18, 20, 0.8);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2D2D33;
+        }
+        .canvas-grid {
+            background-image: radial-gradient(#1F1F23 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .glass-sidebar {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-dark);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0070FF",
+                        "bg-dark": "#0A0A0B",
+                        "surface-dark": "#121214",
+                        "border-dark": "#1F1F23",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-bg-dark text-slate-100 h-screen flex flex-col overflow-hidden">
+<header class="flex shrink-0 items-center justify-between border-b border-border-dark px-6 py-3 bg-bg-dark z-30">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">hub</span>
+</div>
+<h2 class="text-white text-lg font-semibold tracking-tight">Atom AI Builder</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-border-dark hover:bg-[#2D2D33] text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-[20px] mr-2">save</span>
+<span class="text-sm font-medium">Save</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px] mr-2">rocket_launch</span>
+<span class="text-sm font-semibold">Deploy</span>
+</button>
+<div class="w-px h-6 bg-border-dark mx-2"></div>
+<div class="flex gap-2">
+<button class="size-9 flex items-center justify-center rounded-lg hover:bg-border-dark text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<div class="size-9 rounded-full bg-border-dark overflow-hidden border border-border-dark">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGpbzWHjsQKtMTaRr4-fQwKKG7lvnqY2ZUXEb3v6e9qLNzrLN10CVX3qdXb97xiuS_DV5ZzCXEEG7-86a8M-QQBCk3ymlHUpnnznHnUNVzVF5gZVC-z0F-7cOaSJ9GGsq7ZOXesPGXPIXmT6qsJczSZ5Zf6PsoaOULQAK9KE_o5DyLm6Zm64A6vJK1_eDGSubNXrrnk8K9V0nGoazzkJXLRZ_zjgGVG6lKuIz5sy_Z9XIi3nd4jfcTwK4GAKwLyanPE6xUQG5vpoQ"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-64 glass-sidebar flex flex-col z-20">
+<div class="p-4 border-b border-border-dark">
+<h3 class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3">Nodes</h3>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="w-full bg-bg-dark/50 border border-border-dark rounded-md text-xs py-2 pl-9 pr-3 text-slate-300 placeholder:text-slate-600 focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Search components..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-3 space-y-4">
+<div>
+<p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2 px-2">Flow Control</p>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-border-dark cursor-grab group transition-all">
+<span class="material-symbols-outlined text-primary text-[20px]">psychology</span>
+<span class="text-slate-300 text-sm font-medium">Memory</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 border border-primary/30 cursor-grab group">
+<span class="material-symbols-outlined text-primary text-[20px]">schema</span>
+<span class="text-white text-sm font-medium">Orchestrator</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-border-dark cursor-grab group transition-all">
+<span class="material-symbols-outlined text-emerald-500 text-[20px]">fact_check</span>
+<span class="text-slate-300 text-sm font-medium">Validator</span>
+</div>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2 px-2">Agents</p>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-border-dark cursor-grab group transition-all">
+<span class="material-symbols-outlined text-purple-500 text-[20px]">manage_accounts</span>
+<span class="text-slate-300 text-sm font-medium">Specialist</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 border border-transparent hover:border-border-dark cursor-grab group transition-all">
+<span class="material-symbols-outlined text-orange-500 text-[20px]">extension</span>
+<span class="text-slate-300 text-sm font-medium">Generic</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-border-dark bg-bg-dark/20">
+<div class="flex items-center gap-2 text-[10px] text-slate-500">
+<span class="size-1.5 rounded-full bg-emerald-500"></span>
+<span>System Online</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 relative overflow-hidden bg-bg-dark canvas-grid">
+<div class="absolute top-6 left-6 z-10">
+<div class="flex flex-col gap-1">
+<h1 class="text-white text-xl font-semibold tracking-tight">Main Orchestrator Flow</h1>
+<div class="flex items-center gap-2 text-slate-500 text-xs">
+<span>v1.2.4</span>
+<span class="mx-1">•</span>
+<span>Modified 5m ago</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 flex items-center gap-1 bg-surface-dark border border-border-dark p-1 rounded-lg shadow-2xl z-10">
+<button class="p-1.5 hover:bg-border-dark rounded text-slate-400 transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<span class="text-[10px] font-mono w-9 text-center text-slate-500">100%</span>
+<button class="p-1.5 hover:bg-border-dark rounded text-slate-400 transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+<div class="w-px h-4 bg-border-dark mx-1"></div>
+<button class="p-1.5 hover:bg-border-dark rounded text-slate-400 transition-colors"><span class="material-symbols-outlined text-[18px]">fit_screen</span></button>
+</div>
+<div class="absolute inset-0 overflow-auto">
+<div class="relative w-[3000px] h-[3000px]">
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<path d="M480 300 C 580 300, 580 300, 680 300" fill="none" stroke="#1F1F23" stroke-width="2"></path>
+<path d="M980 300 C 1080 300, 1080 300, 1180 300" fill="none" stroke="#1F1F23" stroke-width="2"></path>
+<path d="M830 360 C 830 450, 830 450, 830 520" fill="none" stroke="#1F1F23" stroke-width="2"></path>
+</svg>
+<div class="absolute left-[200px] top-[240px] w-72 bg-surface-dark border border-border-dark rounded-xl shadow-xl p-4 hover:border-slate-700 transition-all cursor-move group">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined text-[20px]">input</span>
+</div>
+<div>
+<h4 class="text-white text-sm font-semibold">User Request</h4>
+<p class="text-slate-500 text-[10px]">Webhook Trigger</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-600 group-hover:text-slate-300 text-[18px]">more_vert</span>
+</div>
+<div class="text-[11px] font-mono text-slate-500 bg-bg-dark/50 p-2 rounded">POST /v1/incoming</div>
+<div class="absolute -right-1.5 top-1/2 -translate-y-1/2 size-3 bg-slate-600 rounded-full border-2 border-surface-dark"></div>
+</div>
+<div class="absolute left-[680px] top-[220px] w-80 bg-surface-dark border-2 border-primary rounded-xl shadow-[0_0_30px_rgba(0,112,255,0.15)] p-5 z-20 cursor-move">
+<div class="flex items-center justify-between mb-5">
+<div class="flex items-center gap-3">
+<div class="size-9 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">schema</span>
+</div>
+<div>
+<h4 class="text-white text-sm font-bold tracking-tight">Orchestrator</h4>
+<p class="text-primary text-[10px] font-bold uppercase tracking-wider">Processing</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+</div>
+<div class="space-y-3 mb-2">
+<div class="flex items-center justify-between text-[11px] text-slate-400">
+<span>Token Usage</span>
+<span>421/1024</span>
+</div>
+<div class="h-1 bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[40%]"></div>
+</div>
+<div class="flex justify-between text-[10px]">
+<span class="text-slate-500">GPT-4o</span>
+<span class="text-emerald-500">Healthy</span>
+</div>
+</div>
+<div class="absolute -left-1.5 top-1/2 -translate-y-1/2 size-3 bg-primary rounded-full border-2 border-surface-dark"></div>
+<div class="absolute -right-1.5 top-1/2 -translate-y-1/2 size-3 bg-primary rounded-full border-2 border-surface-dark"></div>
+<div class="absolute left-1/2 -bottom-1.5 -translate-x-1/2 size-3 bg-purple-500 rounded-full border-2 border-surface-dark"></div>
+</div>
+<div class="absolute left-[690px] top-[520px] w-72 bg-surface-dark border border-border-dark rounded-xl shadow-xl p-4 opacity-80">
+<div class="flex items-center gap-3 mb-4">
+<div class="size-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div>
+<h4 class="text-white text-sm font-semibold">Support Specialist</h4>
+<p class="text-slate-500 text-[10px]">Context Aware Agent</p>
+</div>
+</div>
+<div class="absolute left-1/2 -top-1.5 -translate-x-1/2 size-3 bg-slate-600 rounded-full border-2 border-surface-dark"></div>
+</div>
+</div>
+</div>
+</main>
+<aside class="w-[380px] flex flex-col border-l border-border-dark bg-surface-dark z-30 shadow-2xl overflow-y-auto">
+<div class="sticky top-0 bg-surface-dark/95 backdrop-blur-md p-4 border-b border-border-dark flex items-center justify-between z-10">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">settings_input_component</span>
+</div>
+<div>
+<h2 class="text-white font-bold text-sm tracking-tight">Properties</h2>
+<p class="text-slate-500 text-[10px]">Node ID: orch_9932_fb</p>
+</div>
+</div>
+<button class="p-1.5 hover:bg-border-dark rounded text-slate-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-5 space-y-8">
+<section class="space-y-4">
+<h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">General Configuration</h3>
+<div class="space-y-1.5">
+<label class="text-xs text-slate-400 font-medium px-1">Node Name</label>
+<input class="w-full bg-bg-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all" type="text" value="Orchestrator"/>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs text-slate-400 font-medium px-1">Model Selection</label>
+<div class="relative">
+<select class="w-full bg-bg-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none transition-all">
+<option>GPT-4o (Omni)</option>
+<option>Claude 3.5 Sonnet</option>
+<option>GPT-4 Turbo</option>
+<option>Llama 3 70B</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</section>
+<section class="space-y-4">
+<h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Hyperparameters</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center mb-1">
+<label class="text-xs text-slate-400 font-medium">Temperature</label>
+<span class="text-xs font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded">0.7</span>
+</div>
+<input class="w-full h-1.5 bg-bg-dark rounded-lg appearance-none cursor-pointer accent-primary" max="1" min="0" step="0.1" type="range" value="0.7"/>
+<div class="flex justify-between text-[9px] text-slate-600">
+<span>Precise</span>
+<span>Creative</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs text-slate-400 font-medium px-1">System Prompt</label>
+<textarea class="w-full bg-bg-dark border border-border-dark rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all resize-none leading-relaxed" placeholder="Define the orchestrator role..." rows="4">You are an advanced agent orchestrator. Your goal is to analyze user intent and route tasks to the appropriate specialist agent...</textarea>
+</div>
+</section>
+<section class="space-y-4">
+<h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Advanced Settings</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-xl bg-bg-dark/40 border border-border-dark">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Streaming Response</span>
+<span class="text-[10px] text-slate-500">Enable real-time token output</span>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors bg-primary">
+<span class="translate-x-5 pointer-events-none inline-block size-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-bg-dark/40 border border-border-dark">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Context Memory</span>
+<span class="text-[10px] text-slate-500">Inject short-term chat history</span>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors bg-slate-700">
+<span class="translate-x-0 pointer-events-none inline-block size-4 transform rounded-full bg-slate-400 shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-bg-dark/40 border border-border-dark">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-200">Tool Use (Function Calling)</span>
+<span class="text-[10px] text-slate-500">Allow agent to execute functions</span>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors bg-primary">
+<span class="translate-x-5 pointer-events-none inline-block size-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+</section>
+<div class="flex gap-2 pt-4">
+<button class="flex-1 py-2.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition-all shadow-lg shadow-primary/10">Apply Changes</button>
+<button class="px-3 py-2.5 border border-border-dark text-slate-400 hover:text-white rounded-lg transition-all"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+</aside>
+</div>
+
+</body></html>
