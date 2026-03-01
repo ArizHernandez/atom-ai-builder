@@ -79,6 +79,13 @@ const NODE_VISUAL_CONFIG: Record<NodeType, {
     iconColor: 'text-green-500',
     iconName: 'send',
   },
+  telegram: {
+    gradientFrom: 'from-[#0088cc]',
+    gradientTo: 'to-blue-400',
+    iconBg: 'bg-[#0088cc]/10',
+    iconColor: 'text-[#0088cc]',
+    iconName: 'send',
+  },
 };
 
 const HANDLE_BASE = '!w-3 !h-3 !border-2 !border-[#101422] !rounded-full';
@@ -206,6 +213,14 @@ function NodeBody({ data }: { data: WorkflowNodeData }) {
     );
   }
 
+  if (type === 'telegram') {
+    return (
+      <p className="text-xs text-slate-400 leading-relaxed mt-2">
+        Conexión con bot de Telegram.
+      </p>
+    );
+  }
+
   return null;
 }
 
@@ -308,6 +323,13 @@ export function WorkflowNodeComponent({ data: rawData, selected }: NodeProps) {
 
       {data.type === 'output' && (
         <Handle type="target" position={Position.Left} className={`${HANDLE_BASE} !bg-green-500`} />
+      )}
+
+      {data.type === 'telegram' && (
+        <>
+          <Handle type="target" position={Position.Left} className={`${HANDLE_BASE} !bg-[#0088cc]`} />
+          <Handle type="source" position={Position.Right} className={`${HANDLE_BASE} !bg-[#0088cc]`} />
+        </>
       )}
     </div>
   );

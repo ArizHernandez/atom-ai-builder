@@ -25,6 +25,7 @@ const nodeTypes: NodeTypes = {
   generic: WorkflowNodeComponent,
   tool: WorkflowNodeComponent,
   output: WorkflowNodeComponent,
+  telegram: WorkflowNodeComponent,
 };
 
 function FlowCanvas() {
@@ -112,8 +113,8 @@ function FlowCanvas() {
           onClick={generateMockWorkflow}
           disabled={isGenerating}
           className={`px-4 py-2 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 ${isGenerating
-              ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-              : 'bg-[#2559f4] hover:bg-blue-600 text-white shadow-blue-500/25 cursor-pointer'
+            ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+            : 'bg-[#2559f4] hover:bg-blue-600 text-white shadow-blue-500/25 cursor-pointer'
             }`}
         >
           {isGenerating ? (

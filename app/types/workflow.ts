@@ -8,7 +8,8 @@ export type NodeType =
   | 'specialist'
   | 'generic'
   | 'tool'
-  | 'output';
+  | 'output'
+  | 'telegram';
 
 export interface RagFile {
   name: string;
