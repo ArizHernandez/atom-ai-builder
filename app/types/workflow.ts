@@ -10,6 +10,12 @@ export type NodeType =
   | 'tool'
   | 'output';
 
+export interface RagFile {
+  name: string;
+  size?: number;
+  content?: string;
+}
+
 export interface NodeConfig {
   system_prompt?: string;   // for orchestrator / specialist / generic / validator
   description?: string;     // for validator / generic nodes
@@ -25,6 +31,8 @@ export interface NodeConfig {
   | 'generic';
   validation_fields?: string[]; // which fields the validator must collect
   tool_source?: 'inventory' | 'faqs' | 'agenda'; // for tool nodes
+  has_rag_addon?: boolean; // indicates if the RAG add-on is active
+  rag_files?: RagFile[];   // JSON files uploaded for the RAG add-on
 }
 
 export interface WorkflowNodeData extends Record<string, unknown> {

@@ -251,6 +251,25 @@ export function WorkflowNodeComponent({ data: rawData, selected }: NodeProps) {
         </div>
 
         <NodeBody data={data} />
+
+        {/* Global indicator for RAG Add-on */}
+        {data.config.has_rag_addon && data.config.rag_files && data.config.rag_files.length > 0 && (
+          <div className="mt-3 pt-2 border-t border-slate-100 dark:border-[#282c39]">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1 text-[10px] text-[#2559f4] font-medium">
+                <span className="material-symbols-outlined text-[12px]">database</span>
+                <span>RAG Knowledge Base</span>
+              </div>
+              <div className="flex gap-1 flex-wrap">
+                {data.config.rag_files.map((file, i) => (
+                  <span key={i} className="text-[9px] px-1 py-0.5 bg-slate-100 dark:bg-[#282c39] text-slate-500 rounded border border-slate-200 dark:border-slate-700 truncate max-w-[120px]" title={file.name}>
+                    📄 {file.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Handles by node type ─────────────────────────────────── */}
