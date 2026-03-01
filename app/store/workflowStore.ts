@@ -213,26 +213,26 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
 
 const INITIAL_EDGES: Edge[] = [
   // Flujo principal
-  { id: 'e-start-memory',        source: 'node-start',                 target: 'node-memory',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-memory-orch',         source: 'node-memory',                target: 'node-orchestrator',          type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-start-memory', source: 'node-start', target: 'node-memory', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-memory-orch', source: 'node-memory', target: 'node-orchestrator', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
 
   // Orquestador → agentes (líneas punteadas = decisión condicional)
-  { id: 'e-orch-validator',      source: 'node-orchestrator',          target: 'node-validator',             type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-catalogo',       source: 'node-orchestrator',          target: 'node-specialist-catalogo',   type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-citas',          source: 'node-orchestrator',          target: 'node-specialist-citas',      type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-consultas',      source: 'node-orchestrator',          target: 'node-specialist-general',    type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-generic',        source: 'node-orchestrator',          target: 'node-generic',               type: 'smoothstep', style: { stroke: '#6b7280', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-validator', source: 'node-orchestrator', target: 'node-validator', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-catalogo', source: 'node-orchestrator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-citas', source: 'node-orchestrator', target: 'node-specialist-citas', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-consultas', source: 'node-orchestrator', target: 'node-specialist-general', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-generic', source: 'node-orchestrator', target: 'node-generic', type: 'smoothstep', style: { stroke: '#6b7280', strokeWidth: 2, strokeDasharray: '5 3' } },
 
   // Validador → especialistas (datos completos)
-  { id: 'e-validator-catalogo',  source: 'node-validator',             target: 'node-specialist-catalogo',   type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
-  { id: 'e-validator-citas',     source: 'node-validator',             target: 'node-specialist-citas',      type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
-  { id: 'e-validator-general',   source: 'node-validator',             target: 'node-specialist-general',    type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-validator-catalogo', source: 'node-validator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-validator-citas', source: 'node-validator', target: 'node-specialist-citas', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-validator-general', source: 'node-validator', target: 'node-specialist-general', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
 
   // Especialistas → output
-  { id: 'e-catalogo-output',     source: 'node-specialist-catalogo',   target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-citas-output',        source: 'node-specialist-citas',      target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-consultas-output',    source: 'node-specialist-general',    target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-generic-output',      source: 'node-generic',               target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-catalogo-output', source: 'node-specialist-catalogo', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-citas-output', source: 'node-specialist-citas', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-consultas-output', source: 'node-specialist-general', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-generic-output', source: 'node-generic', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
 ];
 
 // ─── Store interface ───────────────────────────────────────────────────────────
@@ -248,8 +248,10 @@ interface WorkflowStore {
   pipelineState: PipelineState | null;
 
   // Chat / playground
+  isPlaygroundVisible: boolean;
   messages: ChatMessage[];
   isStreaming: boolean;
+  abortController: AbortController | null;
 
   // React Flow handlers
   onNodesChange: (changes: NodeChange[]) => void;
@@ -270,7 +272,9 @@ interface WorkflowStore {
   // Chat mutations
   addMessage: (message: ChatMessage) => void;
   appendToLastAssistantMessage: (chunk: string) => void;
+  setIsPlaygroundVisible: (value: boolean) => void;
   setIsStreaming: (value: boolean) => void;
+  setAbortController: (controller: AbortController | null) => void;
   resetMessages: () => void;
 
   // Generation
@@ -292,8 +296,10 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   },
   selectedNodeId: null,
   pipelineState: null,
+  isPlaygroundVisible: false,
   messages: [],
   isStreaming: false,
+  abortController: null,
   isGenerating: false,
 
   onNodesChange: (changes) =>
@@ -355,9 +361,16 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
       return { messages };
     }),
 
+  setIsPlaygroundVisible: (value) => set({ isPlaygroundVisible: value }),
+
   setIsStreaming: (value) => set({ isStreaming: value }),
 
-  resetMessages: () => set({ messages: [], pipelineState: null }),
+  setAbortController: (controller) => set({ abortController: controller }),
+
+  resetMessages: () => {
+    get().abortController?.abort();
+    set({ messages: [], pipelineState: null, isStreaming: false, abortController: null });
+  },
 
   generateMockWorkflow: () => {
     if (get().isGenerating) return;

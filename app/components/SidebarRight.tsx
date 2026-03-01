@@ -6,98 +6,6 @@ import { useChat } from '@/app/hooks/useChat';
 import { useWorkflowStore } from '@/app/store/workflowStore';
 import PropertiesPanel from './PropertiesPanel';
 
-// ─── Debug console ─────────────────────────────────────────────────────────────
-function DebugConsole() {
-  const pipelineState = useWorkflowStore((s) => s.pipelineState);
-  const [open, setOpen] = useState(false);
-
-  const intentColors: Record<string, string> = {
-    catalogo: 'text-purple-400',
-    citas: 'text-blue-400',
-    consulta_general: 'text-amber-400',
-    out_of_scope: 'text-slate-400',
-  };
-
-  const agentColors: Record<string, string> = {
-    validator: 'text-amber-400',
-    specialist: 'text-purple-400',
-    generic: 'text-slate-400',
-  };
-
-  return (
-    <div className="border-t border-slate-200 dark:border-[#282c39] bg-slate-50 dark:bg-[#101422]/30 shrink-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-3 text-xs font-semibold text-slate-500 hover:text-[#2559f4] hover:bg-slate-100 dark:hover:bg-[#282c39] transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px]">terminal</span>
-          <span>Pipeline Debug</span>
-          {pipelineState && (
-            <span className="size-1.5 rounded-full bg-green-500 animate-pulse" />
-          )}
-        </div>
-        <span className="material-symbols-outlined text-[16px]">
-          {open ? 'expand_more' : 'expand_less'}
-        </span>
-      </button>
-
-      {open && (
-        <div className="px-3 pb-3 space-y-1.5 font-mono text-[11px]">
-          {!pipelineState ? (
-            <p className="text-slate-500 italic">Sin actividad aún. Envía un mensaje al Playground.</p>
-          ) : (
-            <>
-              <div className="flex justify-between">
-                <span className="text-slate-500">intent</span>
-                <span className={intentColors[pipelineState.intent ?? ''] ?? 'text-slate-300'}>
-                  {pipelineState.intent ?? '—'}
-                  {pipelineState.confidence !== undefined &&
-                    ` (${Math.round(pipelineState.confidence * 100)}%)`}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">next_agent</span>
-                <span className={agentColors[pipelineState.next_agent ?? ''] ?? 'text-slate-300'}>
-                  {pipelineState.next_agent ?? '—'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">active_node</span>
-                <span className="text-emerald-400 truncate max-w-[150px]">
-                  {pipelineState.active_node ?? '—'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">validation</span>
-                <span className={pipelineState.is_validation_complete ? 'text-green-400' : 'text-amber-400'}>
-                  {pipelineState.is_validation_complete ? 'complete' : 'pending'}
-                </span>
-              </div>
-              {pipelineState.extracted_data && (
-                <details className="mt-1">
-                  <summary className="text-slate-500 cursor-pointer hover:text-slate-300">extracted_data</summary>
-                  <pre className="mt-1 text-slate-400 text-[10px] overflow-x-auto">
-                    {JSON.stringify(pipelineState.extracted_data, null, 2)}
-                  </pre>
-                </details>
-              )}
-              {pipelineState.reasoning && (
-                <details className="mt-1">
-                  <summary className="text-slate-500 cursor-pointer hover:text-slate-300">reasoning</summary>
-                  <p className="mt-1 text-slate-400 text-[10px] leading-relaxed italic">
-                    {pipelineState.reasoning}
-                  </p>
-                </details>
-              )}
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ─── Playground chat ───────────────────────────────────────────────────────────
 function PlaygroundChat() {
   const [inputValue, setInputValue] = useState('');
@@ -258,6 +166,9 @@ function PlaygroundChat() {
 // ─── Root sidebar ──────────────────────────────────────────────────────────────
 export default function SidebarRight() {
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
+  const isPlaygroundVisible = useWorkflowStore((s) => s.isPlaygroundVisible);
+  const setIsPlaygroundVisible = useWorkflowStore((s) => s.setIsPlaygroundVisible);
+  const resetMessages = useWorkflowStore((s) => s.resetMessages);
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (!isExpanded) {
@@ -289,14 +200,30 @@ export default function SidebarRight() {
         <div className="flex-1 overflow-hidden flex flex-col">
           <PropertiesPanel />
         </div>
+      ) : isPlaygroundVisible ? (
+        /* Playground */
+        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+          <PlaygroundChat />
+        </div>
       ) : (
-        /* Playground (default view) + debug console */
-        <>
-          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-            <PlaygroundChat />
+        /* Empty state */
+        <div className="flex-1 overflow-hidden flex flex-col items-center justify-center p-6 text-center text-slate-500 bg-slate-50 dark:bg-[#101422]/50">
+          <div className="size-16 rounded-full bg-slate-100 dark:bg-[#282c39] flex items-center justify-center mb-4 text-slate-400">
+            <span className="material-symbols-outlined text-[32px]">science</span>
           </div>
-          <DebugConsole />
-        </>
+          <h3 className="text-slate-700 dark:text-slate-300 font-bold mb-2">Playground Inactivo</h3>
+          <p className="text-sm px-4">Haz clic en <strong>Execute</strong> para iniciar una sesión de prueba.</p>
+          <button
+            onClick={() => {
+              resetMessages();
+              setIsPlaygroundVisible(true);
+            }}
+            className="mt-6 flex items-center justify-center rounded-lg h-9 px-4 bg-emerald-500 hover:bg-emerald-600 text-white transition-colors shadow-md shadow-emerald-500/20"
+          >
+            <span className="material-symbols-outlined text-[20px] mr-2">play_arrow</span>
+            <span className="text-sm font-bold">Execute</span>
+          </button>
+        </div>
       )}
     </aside>
   );

@@ -5,7 +5,7 @@ import ThemeToggle from "./ThemeToggle";
 import { useWorkflowStore } from '@/app/store/workflowStore';
 
 export default function Header() {
-    const { nodes, edges, setWorkflow } = useWorkflowStore();
+    const { nodes, edges, setWorkflow, isPlaygroundVisible, setIsPlaygroundVisible, resetMessages } = useWorkflowStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleExport = () => {
@@ -59,6 +59,23 @@ export default function Header() {
                     <span className="material-symbols-outlined text-[20px] mr-2">save</span>
                     <span className="text-sm font-bold">Save Draft</span>
                 </button> */}
+                <button
+                    onClick={() => {
+                        resetMessages();
+                        setIsPlaygroundVisible(!isPlaygroundVisible);
+                    }}
+                    className={`flex items-center justify-center rounded-lg h-9 px-3 transition-colors shadow-lg mr-2 ${isPlaygroundVisible
+                        ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
+                        : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/20'
+                        }`}
+                >
+                    <span className="material-symbols-outlined text-[20px] mr-2">
+                        {isPlaygroundVisible ? 'stop' : 'play_arrow'}
+                    </span>
+                    <span className="text-sm font-bold">
+                        {isPlaygroundVisible ? 'Stop' : 'Execute'}
+                    </span>
+                </button>
                 <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
                     <span className="material-symbols-outlined text-[20px] mr-2">rocket_launch</span>
                     <span className="text-sm font-bold">Deploy Agent</span>

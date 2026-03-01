@@ -13,6 +13,8 @@ export function useChat() {
     appendToLastAssistantMessage,
     setIsStreaming,
     setPipelineState,
+    abortController,
+    setAbortController,
   } = useWorkflowStore();
 
   const sendMessage = useCallback(
@@ -26,6 +28,9 @@ export function useChat() {
       addMessage({ role: 'assistant', content: '' });
       setIsStreaming(true);
 
+      const newController = new AbortController();
+      setAbortController(newController);
+
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
@@ -34,6 +39,7 @@ export function useChat() {
             messages: [...historySnapshot, { role: 'user', content }],
             workflow: { nodes },
           }),
+          signal: newController.signal,
         });
 
         if (!response.ok || !response.body) {
@@ -85,14 +91,19 @@ export function useChat() {
             }
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          console.log('[useChat] fetch aborted');
+          return;
+        }
         console.error('[useChat] error:', err);
         appendToLastAssistantMessage('Error: fallo en la conexión.');
       } finally {
         setIsStreaming(false);
+        setAbortController(null);
       }
     },
-    [messages, nodes, isStreaming, addMessage, appendToLastAssistantMessage, setIsStreaming, setPipelineState]
+    [messages, nodes, isStreaming, addMessage, appendToLastAssistantMessage, setIsStreaming, setPipelineState, setAbortController]
   );
 
   return { messages, isStreaming, sendMessage };
