@@ -371,8 +371,8 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
         // Once all nodes are added, add edges progressively
         let edgeIndex = 0;
         const addNextEdge = () => {
-          if (edgeIndex < DUMMY_GENERATED_EDGES.length) {
-            set((state) => ({ edges: [...state.edges, DUMMY_GENERATED_EDGES[edgeIndex]] }));
+          if (edgeIndex < INITIAL_EDGES.length) {
+            set((state) => ({ edges: [...state.edges, INITIAL_EDGES[edgeIndex]] }));
             edgeIndex++;
             setTimeout(addNextEdge, 200); // 200ms delay between edges
           } else {

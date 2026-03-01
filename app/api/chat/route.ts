@@ -241,9 +241,6 @@ function buildAgentSystemPrompt(
     lines.push(
       '## INSTRUCCIONES DEL VALIDADOR',
       config.description ||
-<<<<<<< HEAD
-      'Recopila los datos necesarios del cliente de forma conversacional, una pregunta a la vez.',
-=======
         'Recopila los datos necesarios del cliente de forma conversacional, una pregunta a la vez.',
       '',
       `## CASO DE USO ACTIVO: ${caseLabel.toUpperCase()}`,
@@ -252,7 +249,6 @@ function buildAgentSystemPrompt(
         : detectedIntent === 'citas'
         ? 'Recopila en este orden: (1) nombre completo, (2) fecha preferida, (3) hora preferida, (4) motivo (prueba de manejo o asesoría), (5) vehículo de interés si aplica.'
         : 'Recopila en este orden: (1) ¿cliente nuevo o existente?, (2) situación laboral (asalariado/independiente), (3) edad aproximada.',
->>>>>>> fredy
       ''
     );
   }
@@ -391,13 +387,8 @@ export async function POST(request: Request) {
               orchResult = { intent: 'out_of_scope', next_agent: 'generic', confidence: 0.5 };
             }
 
-<<<<<<< HEAD
-            const intent = orchResult.intent ?? 'out_of_scope';
-            const nextAgent = orchResult.next_agent ?? 'generic';
-=======
             const intent          = orchResult.intent    ?? 'out_of_scope';
             const nextAgent       = orchResult.next_agent ?? 'generic';
->>>>>>> fredy
             const needsValidation = orchResult.requires_validation ?? true;
             const extracted       = (orchResult.extracted_data ?? {}) as ExtractedData;
             const conversationTurns = messages.filter((m) => m.role === 'user').length;
