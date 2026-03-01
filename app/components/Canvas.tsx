@@ -33,6 +33,7 @@ function FlowCanvas() {
     onNodesChange, onEdgesChange, onConnect,
     addNode, meta,
     setSelectedNode,
+    isGenerating, generateMockWorkflow,
   } = useWorkflowStore();
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -103,6 +104,30 @@ function FlowCanvas() {
             <span>Editado {meta.lastEdited}</span>
           </div>
         </div>
+      </div>
+
+      {/* Generation Trigger Button */}
+      <div className="absolute top-4 right-4 z-10">
+        <button
+          onClick={generateMockWorkflow}
+          disabled={isGenerating}
+          className={`px-4 py-2 rounded-lg font-medium shadow-sm transition-all flex items-center gap-2 ${isGenerating
+              ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+              : 'bg-[#2559f4] hover:bg-blue-600 text-white shadow-blue-500/25 cursor-pointer'
+            }`}
+        >
+          {isGenerating ? (
+            <>
+              <span className="material-symbols-outlined text-[18px] animate-spin">refresh</span>
+              Generando...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[18px]">magic_button</span>
+              Generar Nodos
+            </>
+          )}
+        </button>
       </div>
 
       <ReactFlow

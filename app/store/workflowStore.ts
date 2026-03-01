@@ -140,7 +140,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   },
 ];
 
-const INITIAL_EDGES: Edge[] = [
+const DUMMY_GENERATED_EDGES: Edge[] = [
   { id: 'e-start-memory', source: 'node-start', target: 'node-memory', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
   { id: 'e-memory-orch', source: 'node-memory', target: 'node-orchestrator', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
   { id: 'e-orch-validator', source: 'node-orchestrator', target: 'node-validator', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
@@ -190,12 +190,16 @@ interface WorkflowStore {
   appendToLastAssistantMessage: (chunk: string) => void;
   setIsStreaming: (value: boolean) => void;
   resetMessages: () => void;
+
+  // Generation
+  isGenerating: boolean;
+  generateMockWorkflow: () => void;
 }
 
 // ─── Store implementation ──────────────────────────────────────────────────────
-export const useWorkflowStore = create<WorkflowStore>((set) => ({
-  nodes: INITIAL_NODES,
-  edges: INITIAL_EDGES,
+export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
+  nodes: INITIAL_NODES.slice(0, 1), // Start only with the first node
+  edges: [],
   meta: {
     name: 'Concesionaria AutoMóvil Premium',
     status: 'active',
@@ -205,6 +209,7 @@ export const useWorkflowStore = create<WorkflowStore>((set) => ({
   pipelineState: null,
   messages: [],
   isStreaming: false,
+  isGenerating: false,
 
   onNodesChange: (changes) =>
     set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) as Node<WorkflowNodeData>[] })),
@@ -268,4 +273,34 @@ export const useWorkflowStore = create<WorkflowStore>((set) => ({
   setIsStreaming: (value) => set({ isStreaming: value }),
 
   resetMessages: () => set({ messages: [], pipelineState: null }),
+
+  generateMockWorkflow: () => {
+    if (get().isGenerating) return;
+
+    set({ isGenerating: true, nodes: [], edges: [] });
+
+    let nodeIndex = 0;
+    const addNextNode = () => {
+      if (nodeIndex < INITIAL_NODES.length) {
+        set((state) => ({ nodes: [...state.nodes, INITIAL_NODES[nodeIndex]] }));
+        nodeIndex++;
+        setTimeout(addNextNode, 500); // 500ms delay between nodes
+      } else {
+        // Once all nodes are added, add edges progressively
+        let edgeIndex = 0;
+        const addNextEdge = () => {
+          if (edgeIndex < DUMMY_GENERATED_EDGES.length) {
+            set((state) => ({ edges: [...state.edges, DUMMY_GENERATED_EDGES[edgeIndex]] }));
+            edgeIndex++;
+            setTimeout(addNextEdge, 200); // 200ms delay between edges
+          } else {
+            set({ isGenerating: false }); // Complete
+          }
+        };
+        setTimeout(addNextEdge, 500);
+      }
+    };
+
+    setTimeout(addNextNode, 500);
+  },
 }));
