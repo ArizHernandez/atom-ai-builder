@@ -187,8 +187,8 @@ function PlaygroundChat() {
             <div key={index} className="flex gap-3">
               <div
                 className={`size-8 rounded-full flex items-center justify-center shrink-0 shadow-lg ${isStreaming && isLast
-                    ? 'bg-[#2559f4]/50 animate-pulse'
-                    : 'bg-[#2559f4] shadow-[#2559f4]/20'
+                  ? 'bg-[#2559f4]/50 animate-pulse'
+                  : 'bg-[#2559f4] shadow-[#2559f4]/20'
                   }`}
               >
                 <span className="material-symbols-outlined text-white text-[16px]">
@@ -206,8 +206,8 @@ function PlaygroundChat() {
                 )}
                 <div
                   className={`p-3 rounded-2xl rounded-tl-none text-sm shadow-sm leading-relaxed whitespace-pre-wrap ${isStreaming && isLast && isEmpty
-                      ? 'bg-white dark:bg-[#1b1e27] border border-[#2559f4]/30 border-dashed text-slate-500 dark:text-slate-400 italic'
-                      : 'bg-white dark:bg-[#1b1e27] border border-slate-200 dark:border-[#282c39] text-slate-700 dark:text-slate-200'
+                    ? 'bg-white dark:bg-[#1b1e27] border border-[#2559f4]/30 border-dashed text-slate-500 dark:text-slate-400 italic'
+                    : 'bg-white dark:bg-[#1b1e27] border border-slate-200 dark:border-[#282c39] text-slate-700 dark:text-slate-200'
                     }`}
                 >
                   {isEmpty && isStreaming && isLast
@@ -258,9 +258,32 @@ function PlaygroundChat() {
 // ─── Root sidebar ──────────────────────────────────────────────────────────────
 export default function SidebarRight() {
   const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  if (!isExpanded) {
+    return (
+      <aside className="w-12 flex flex-col items-center py-4 border-l border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-20 shadow-xl shrink-0">
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="p-2 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded-lg text-slate-500 hover:text-[#2559f4] transition-colors"
+          title="Expandir"
+        >
+          <span className="material-symbols-outlined text-[20px]">keyboard_double_arrow_left</span>
+        </button>
+      </aside>
+    );
+  }
 
   return (
-    <aside className="w-[360px] flex flex-col border-l border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-20 shadow-xl shrink-0">
+    <aside className="relative w-[360px] flex flex-col border-l border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-20 shadow-xl shrink-0">
+      <button
+        onClick={() => setIsExpanded(false)}
+        className="absolute top-4 -left-8 w-8 h-8 flex items-center justify-center bg-white dark:bg-[#1b1e27] border border-r-0 border-slate-200 dark:border-[#282c39] rounded-l-lg shadow-sm text-slate-500 hover:text-[#2559f4] transition-colors z-30"
+        title="Colapsar"
+      >
+        <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_right</span>
+      </button>
+
       {selectedNodeId ? (
         /* Properties panel fills the whole sidebar when a node is selected */
         <div className="flex-1 overflow-hidden flex flex-col">

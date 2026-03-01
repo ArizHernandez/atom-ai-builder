@@ -97,6 +97,7 @@ const CATEGORIES: DraggableNode['category'][] = ['Core Flow', 'Agentes', 'Datos 
 
 export default function SidebarLeft() {
   const [search, setSearch] = useState('');
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const filtered = DRAGGABLE_NODES.filter(
     (n) =>
@@ -104,13 +105,36 @@ export default function SidebarLeft() {
       n.subtitle.toLowerCase().includes(search.toLowerCase())
   );
 
+  if (!isExpanded) {
+    return (
+      <aside className="w-12 flex flex-col items-center py-4 border-r border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-10 shrink-0">
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="p-2 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded-lg text-slate-500 hover:text-[#2559f4] transition-colors"
+          title="Expandir"
+        >
+          <span className="material-symbols-outlined text-[20px]">keyboard_double_arrow_right</span>
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside className="w-64 flex flex-col border-r border-slate-200 dark:border-[#282c39] bg-white dark:bg-[#1b1e27] z-10 shrink-0">
       {/* Header */}
       <div className="p-4 border-b border-slate-200 dark:border-[#282c39]">
-        <h1 className="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider mb-1">
-          Node Library
-        </h1>
+        <div className="flex justify-between items-start mb-1">
+          <h1 className="text-slate-900 dark:text-white text-sm font-bold uppercase tracking-wider">
+            Node Library
+          </h1>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="p-1 -mt-1 -mr-1 hover:bg-slate-100 dark:hover:bg-[#282c39] rounded text-slate-500 hover:text-[#2559f4] transition-colors"
+            title="Colapsar"
+          >
+            <span className="material-symbols-outlined text-[18px]">keyboard_double_arrow_left</span>
+          </button>
+        </div>
         <p className="text-slate-500 dark:text-slate-400 text-xs">Arrastra al canvas</p>
         <div className="mt-3 relative">
           <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-slate-400">
@@ -146,8 +170,8 @@ export default function SidebarLeft() {
                     draggable
                     onDragStart={(e) => onDragStart(e, node)}
                     className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-grab active:cursor-grabbing group transition-colors select-none ${node.highlighted
-                        ? 'bg-[#2559f4]/10 dark:bg-[#2559f4]/20 border border-[#2559f4]/20'
-                        : 'hover:bg-slate-100 dark:hover:bg-[#282c39]'
+                      ? 'bg-[#2559f4]/10 dark:bg-[#2559f4]/20 border border-[#2559f4]/20'
+                      : 'hover:bg-slate-100 dark:hover:bg-[#282c39]'
                       }`}
                   >
                     <span
