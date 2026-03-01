@@ -1,0 +1,79 @@
+{
+  "dealership": "AutoMóvil Premium",
+  "faqs": [
+    {
+      "id": "FAQ001",
+      "category": "horarios",
+      "question": "¿Cuáles son sus horarios de atención?",
+      "answer": "Estamos abiertos de Lunes a Sábado de 9:00 a 19:00 hs y Domingos de 10:00 a 15:00 hs.",
+      "tags": ["horarios", "atencion", "dias", "abierto"]
+    },
+    {
+      "id": "FAQ002",
+      "category": "ubicacion",
+      "question": "¿Dónde están ubicados?",
+      "answer": "Nos encontramos en Av. Insurgentes Sur 1234, Ciudad de México. Tenemos estacionamiento gratuito para clientes.",
+      "tags": ["ubicacion", "direccion", "como llegar"]
+    },
+    {
+      "id": "FAQ003",
+      "category": "financiamiento",
+      "question": "¿Ofrecen opciones de financiamiento?",
+      "answer": "Sí, trabajamos con los principales bancos del país. Para asalariados ofrecemos tasas desde 9.9% anual a 48 meses con enganche mínimo del 15%. Para clientes independientes requerimos comprobante de ingresos de los últimos 6 meses.",
+      "tags": ["financiamiento", "credito", "pagos", "mensualidad"]
+    },
+    {
+      "id": "FAQ004",
+      "category": "financiamiento_asalariado",
+      "question": "¿Qué documentos necesito si soy asalariado?",
+      "answer": "Como asalariado necesitas: INE vigente, comprobante de domicilio reciente, últimas 3 nóminas o estado de cuenta con depósitos de nómina, y CURP. El proceso de aprobación tarda entre 24 y 48 horas.",
+      "tags": ["financiamiento", "asalariado", "documentos", "requisitos"],
+      "target_profile": "asalariado"
+    },
+    {
+      "id": "FAQ005",
+      "category": "financiamiento_independiente",
+      "question": "¿Qué documentos necesito si soy independiente?",
+      "answer": "Para clientes independientes solicitamos: INE vigente, comprobante de domicilio, declaración fiscal del último año o estados de cuenta bancarios de 6 meses, y acta constitutiva si es empresa. El enganche mínimo es del 20% y la aprobación puede tardar 3-5 días.",
+      "tags": ["financiamiento", "independiente", "documentos", "requisitos"],
+      "target_profile": "independiente"
+    },
+    {
+      "id": "FAQ006",
+      "category": "garantia",
+      "question": "¿Qué garantía incluyen los vehículos nuevos?",
+      "answer": "Todos nuestros vehículos nuevos incluyen garantía de fábrica de 3 años o 60,000 km (lo que ocurra primero), más garantía contra corrosión de 5 años. Adicionalmente ofrecemos extensión de garantía opcional hasta 5 años.",
+      "tags": ["garantia", "warranty", "cobertura"]
+    },
+    {
+      "id": "FAQ007",
+      "category": "proceso_compra",
+      "question": "¿Cuál es el proceso de compra?",
+      "answer": "El proceso es: 1) Seleccionar el vehículo de tu interés. 2) Prueba de manejo (30-45 min). 3) Cotización personalizada con el asesor. 4) Solicitud de financiamiento o pago de contado. 5) Firma de contrato y entrega del vehículo. El tiempo total es de 1-2 días hábiles con financiamiento, o el mismo día en pago de contado.",
+      "tags": ["proceso", "compra", "pasos", "tiempo"]
+    },
+    {
+      "id": "FAQ008",
+      "category": "proceso_compra_nuevo",
+      "question": "¿Qué beneficios tienen los clientes nuevos?",
+      "answer": "Los clientes nuevos tienen acceso a: tasa preferencial en financiamiento (desde 9.9%), bono de bienvenida de $5,000 MXN aplicable a accesorios, primer servicio de mantenimiento GRATIS y asesoría personalizada sin compromiso.",
+      "tags": ["cliente nuevo", "beneficios", "descuento", "primera compra"],
+      "target_profile": "nuevo"
+    },
+    {
+      "id": "FAQ009",
+      "category": "proceso_compra_existente",
+      "question": "¿Qué beneficios tienen los clientes existentes o de lealtad?",
+      "answer": "Como cliente existente tienes: descuento de $8,000 MXN en la compra de tu próximo vehículo, tasa preferencial adicional del 0.5% en financiamiento, prioridad en agenda y asesor dedicado.",
+      "tags": ["cliente existente", "lealtad", "beneficios", "descuento", "recompra"],
+      "target_profile": "existente"
+    },
+    {
+      "id": "FAQ010",
+      "category": "servicio",
+      "question": "¿Tienen taller de servicio?",
+      "answer": "Sí, contamos con taller autorizado con técnicos certificados por el fabricante. Atendemos de Lunes a Sábado de 8:00 a 18:00 hs. Puedes agendar tu cita de servicio en línea o llamando al +52 55 1234 5678.",
+      "tags": ["taller", "servicio", "mantenimiento", "reparacion"]
+    }
+  ]
+}

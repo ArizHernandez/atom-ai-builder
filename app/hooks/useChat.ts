@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { useWorkflowStore } from '@/app/store/workflowStore';
+import type { PipelineState } from '@/app/types/workflow';
 
 export function useChat() {
   const {
@@ -11,6 +12,7 @@ export function useChat() {
     addMessage,
     appendToLastAssistantMessage,
     setIsStreaming,
+    setPipelineState,
   } = useWorkflowStore();
 
   const sendMessage = useCallback(
@@ -18,13 +20,9 @@ export function useChat() {
       const content = userContent.trim();
       if (!content || isStreaming) return;
 
-      // Snapshot current history BEFORE adding new messages (used for the API body)
       const historySnapshot = [...messages];
 
-      // Optimistically add user message to the store
       addMessage({ role: 'user', content });
-
-      // Add an empty assistant placeholder that will be filled via streaming
       addMessage({ role: 'assistant', content: '' });
       setIsStreaming(true);
 
@@ -53,16 +51,33 @@ export function useChat() {
           if (done) break;
 
           const text = decoder.decode(value, { stream: true });
-
-          // Each SSE message is separated by '\n\n'
           const lines = text.split('\n\n').filter(Boolean);
+
           for (const line of lines) {
             if (!line.startsWith('data: ')) continue;
-            const data = line.slice(6); // Remove "data: "
-            if (data === '[DONE]') break;
+            const raw = line.slice(6);
+            if (raw === '[DONE]') break;
+
             try {
-              const parsed = JSON.parse(data) as { content?: string };
-              if (parsed.content) {
+              const parsed = JSON.parse(raw) as {
+                type?: string;
+                content?: string;
+              } & Partial<PipelineState>;
+
+              if (parsed.type === 'pipeline_state') {
+                // Orchestrator analysis result — update debug console
+                setPipelineState({
+                  intent: parsed.intent,
+                  confidence: parsed.confidence,
+                  active_node: parsed.active_node,
+                  next_agent: parsed.next_agent,
+                  requires_validation: parsed.requires_validation,
+                  is_validation_complete: parsed.is_validation_complete,
+                  extracted_data: parsed.extracted_data,
+                  reasoning: parsed.reasoning,
+                });
+              } else if (parsed.content) {
+                // Streaming text chunk from the active agent
                 appendToLastAssistantMessage(parsed.content);
               }
             } catch {
@@ -71,13 +86,13 @@ export function useChat() {
           }
         }
       } catch (err) {
-        console.error('[useChat] sendMessage error:', err);
+        console.error('[useChat] error:', err);
         appendToLastAssistantMessage('Error: fallo en la conexión.');
       } finally {
         setIsStreaming(false);
       }
     },
-    [messages, nodes, isStreaming, addMessage, appendToLastAssistantMessage, setIsStreaming]
+    [messages, nodes, isStreaming, addMessage, appendToLastAssistantMessage, setIsStreaming, setPipelineState]
   );
 
   return { messages, isStreaming, sendMessage };

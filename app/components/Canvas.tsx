@@ -15,19 +15,25 @@ import { useWorkflowStore } from '@/app/store/workflowStore';
 import { WorkflowNodeComponent } from './WorkflowNode';
 import type { WorkflowNodeData, NodeType } from '@/app/types/workflow';
 
-// Register all node types once outside the component to avoid re-renders.
-// Cast to NodeTypes to satisfy React Flow's generic — data is cast inside WorkflowNodeComponent.
+// Register all node types — all share the same custom component
 const nodeTypes: NodeTypes = {
   start: WorkflowNodeComponent,
-  llm: WorkflowNodeComponent,
+  memory: WorkflowNodeComponent,
+  orchestrator: WorkflowNodeComponent,
+  validator: WorkflowNodeComponent,
   specialist: WorkflowNodeComponent,
+  generic: WorkflowNodeComponent,
+  tool: WorkflowNodeComponent,
   output: WorkflowNodeComponent,
 };
 
-// Inner canvas — must be inside ReactFlowProvider to use useReactFlow()
 function FlowCanvas() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode, meta } =
-    useWorkflowStore();
+  const {
+    nodes, edges,
+    onNodesChange, onEdgesChange, onConnect,
+    addNode, meta,
+    setSelectedNode,
+  } = useWorkflowStore();
   const { screenToFlowPosition } = useReactFlow();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
@@ -42,8 +48,8 @@ function FlowCanvas() {
       if (!nodeType) return;
 
       const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
-
       const newNodeId = `node-${nodeType}-${Date.now()}`;
+
       const newNode: Node<WorkflowNodeData> = {
         id: newNodeId,
         type: nodeType,
@@ -67,13 +73,24 @@ function FlowCanvas() {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
+  const onNodeClick = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      setSelectedNode(node.id);
+    },
+    [setSelectedNode]
+  );
+
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+  }, [setSelectedNode]);
+
   return (
     <main
       ref={reactFlowWrapper}
       className="flex-1 relative overflow-hidden bg-slate-50 dark:bg-[#101422]"
       style={{ height: '100%' }}
     >
-      {/* Floating workflow info overlay */}
+      {/* Floating workflow info */}
       <div className="absolute top-4 left-4 pointer-events-none z-10">
         <div className="flex flex-col gap-1 pointer-events-auto">
           <h1 className="text-slate-900 dark:text-white text-2xl font-bold tracking-tight drop-shadow">
@@ -83,7 +100,7 @@ function FlowCanvas() {
             <span className="inline-block size-2 rounded-full bg-green-500" />
             <span className="capitalize">{meta.status}</span>
             <span className="mx-1">•</span>
-            <span>Last edited {meta.lastEdited}</span>
+            <span>Editado {meta.lastEdited}</span>
           </div>
         </div>
       </div>
@@ -97,8 +114,10 @@ function FlowCanvas() {
         nodeTypes={nodeTypes}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         fitView
-        fitViewOptions={{ padding: 0.3 }}
+        fitViewOptions={{ padding: 0.15 }}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={{
           type: 'smoothstep',
@@ -106,21 +125,13 @@ function FlowCanvas() {
         }}
         style={{ width: '100%', height: '100%' }}
       >
-        {/* Dot grid replicating the original canvas-grid CSS */}
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={24}
-          size={1}
-          color="#3b4154"
-        />
-        {/* Built-in zoom + fit controls */}
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#3b4154" />
         <Controls showInteractive={false} />
       </ReactFlow>
     </main>
   );
 }
 
-// Exported default — wraps with ReactFlowProvider scoped to this canvas
 export default function Canvas() {
   return (
     <ReactFlowProvider>

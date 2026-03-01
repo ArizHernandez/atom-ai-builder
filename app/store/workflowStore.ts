@@ -13,102 +13,163 @@ import type {
   EdgeChange,
   Connection,
 } from '@xyflow/react';
-import type { WorkflowNodeData, WorkflowMeta, ChatMessage } from '@/app/types/workflow';
+import type { WorkflowNodeData, WorkflowMeta, ChatMessage, PipelineState } from '@/app/types/workflow';
 
-// Initial demo flow replicating the original Canvas.tsx static demo
+// ─── Demo: Concesionaria AutoMóvil Premium ────────────────────────────────────
 const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-start',
     type: 'start',
-    position: { x: 100, y: 200 },
+    position: { x: 60, y: 340 },
     data: {
       id: 'node-start',
       type: 'start',
-      label: 'Start Trigger',
-      subtitle: 'Incoming Webhook',
+      label: 'Canal Web',
+      subtitle: 'Mensaje entrante',
       config: {},
     },
   },
   {
-    id: 'node-llm-1',
-    type: 'llm',
-    position: { x: 480, y: 180 },
+    id: 'node-memory',
+    type: 'memory',
+    position: { x: 340, y: 340 },
     data: {
-      id: 'node-llm-1',
-      type: 'llm',
-      label: 'Intent Analysis',
-      subtitle: 'LLM Processor',
+      id: 'node-memory',
+      type: 'memory',
+      label: 'Nodo de Memoria',
+      subtitle: 'Contexto de sesión',
+      config: {},
+    },
+  },
+  {
+    id: 'node-orchestrator',
+    type: 'orchestrator',
+    position: { x: 630, y: 340 },
+    data: {
+      id: 'node-orchestrator',
+      type: 'orchestrator',
+      label: 'Agente Orquestador',
+      subtitle: 'Router de intenciones',
       config: {
+        agent_role: 'orchestrator',
         system_prompt:
-          'You are a customer support intent classifier. Analyze the user message and determine whether the issue is related to billing, technical support, or a general inquiry. Route accordingly.',
+          'Eres el Orquestador de AutoMóvil Premium. Analiza la intención del cliente y responde ÚNICAMENTE con JSON:\n{\n  "intent": "catalogo | citas | consulta_general | out_of_scope",\n  "confidence": 0.0-1.0,\n  "next_agent": "validator | specialist | generic",\n  "requires_validation": true/false,\n  "extracted_data": { "cliente_tipo": null, "presupuesto": null, "preferencia": null, "nombre": null, "fecha_preferida": null },\n  "reasoning": "explicación breve"\n}',
       },
     },
   },
   {
-    id: 'node-specialist-1',
-    type: 'specialist',
-    position: { x: 480, y: 460 },
+    id: 'node-validator',
+    type: 'validator',
+    position: { x: 950, y: 140 },
     data: {
-      id: 'node-specialist-1',
-      type: 'specialist',
-      label: 'Billing Agent',
-      subtitle: 'Specialist',
-      config: { description: 'Handles refunds and invoice queries.' },
+      id: 'node-validator',
+      type: 'validator',
+      label: 'Agente Validador',
+      subtitle: 'Recopila datos del cliente',
+      config: {
+        agent_role: 'validator',
+        description:
+          'Recopila los datos necesarios del cliente de forma conversacional, uno a la vez:\n- Para catálogo: presupuesto, tipo de vehículo (SUV/Sedan/Pickup), ¿nuevo o usado?\n- Para citas: nombre, fecha, hora, vehículo de interés\n- Para consultas: ¿cliente nuevo o existente?, ¿asalariado o independiente?\nSi ya tienes todos los datos, confirma que la información está completa.',
+        validation_fields: ['cliente_tipo', 'presupuesto', 'preferencia'],
+      },
     },
   },
   {
-    id: 'node-output-1',
-    type: 'output',
-    position: { x: 880, y: 200 },
+    id: 'node-specialist-catalogo',
+    type: 'specialist',
+    position: { x: 950, y: 380 },
     data: {
-      id: 'node-output-1',
+      id: 'node-specialist-catalogo',
+      type: 'specialist',
+      label: 'Especialista Catálogo',
+      subtitle: 'Vehículos y precios',
+      config: {
+        agent_role: 'specialist_catalogo',
+        system_prompt:
+          'Eres el Especialista de Catálogo de AutoMóvil Premium. Filtra el inventario según el perfil del cliente y recomienda opciones personalizadas con precio, características y plan de financiamiento. Sé conciso y usa formato claro.',
+        use_inventory: true,
+      },
+    },
+  },
+  {
+    id: 'node-specialist-citas',
+    type: 'specialist',
+    position: { x: 950, y: 600 },
+    data: {
+      id: 'node-specialist-citas',
+      type: 'specialist',
+      label: 'Especialista Citas',
+      subtitle: 'Agendamiento y disponibilidad',
+      config: {
+        agent_role: 'specialist_citas',
+        system_prompt:
+          'Eres el Especialista de Citas de AutoMóvil Premium. Ayudas a agendar pruebas de manejo y citas con asesores. Consulta los horarios disponibles y confirma la cita con los datos del cliente. Sé amigable y eficiente.',
+        use_inventory: true,
+        use_agenda: true,
+      },
+    },
+  },
+  {
+    id: 'node-generic',
+    type: 'generic',
+    position: { x: 950, y: 820 },
+    data: {
+      id: 'node-generic',
+      type: 'generic',
+      label: 'Agente Genérico',
+      subtitle: 'Saludos y fuera de scope',
+      config: {
+        agent_role: 'generic',
+        system_prompt:
+          'Eres un asistente amigable de AutoMóvil Premium. Maneja saludos, despedidas y preguntas generales. Si el tema no es de la concesionaria, redirige amablemente al usuario hacia los servicios que sí ofreces: catálogo de vehículos, citas y consultas.',
+        use_faqs: true,
+      },
+    },
+  },
+  {
+    id: 'node-output',
+    type: 'output',
+    position: { x: 1280, y: 490 },
+    data: {
+      id: 'node-output',
       type: 'output',
-      label: 'Response',
-      subtitle: 'Slack Notification',
+      label: 'Respuesta al Cliente',
+      subtitle: 'Canal Web',
       config: {},
     },
   },
 ];
 
 const INITIAL_EDGES: Edge[] = [
-  {
-    id: 'e-start-llm',
-    source: 'node-start',
-    target: 'node-llm-1',
-    type: 'smoothstep',
-    style: { stroke: '#3b4154', strokeWidth: 2 },
-  },
-  {
-    id: 'e-llm-specialist',
-    source: 'node-llm-1',
-    sourceHandle: 'bottom',
-    target: 'node-specialist-1',
-    type: 'smoothstep',
-    style: { stroke: '#3b4154', strokeWidth: 2 },
-  },
-  {
-    id: 'e-llm-output',
-    source: 'node-llm-1',
-    sourceHandle: 'right',
-    target: 'node-output-1',
-    type: 'smoothstep',
-    style: { stroke: '#3b4154', strokeWidth: 2 },
-  },
+  { id: 'e-start-memory', source: 'node-start', target: 'node-memory', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-memory-orch', source: 'node-memory', target: 'node-orchestrator', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-orch-validator', source: 'node-orchestrator', target: 'node-validator', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-catalogo', source: 'node-orchestrator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-citas', source: 'node-orchestrator', target: 'node-specialist-citas', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-generic', source: 'node-orchestrator', target: 'node-generic', type: 'smoothstep', style: { stroke: '#6b7280', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-validator-catalogo', source: 'node-validator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-catalogo-output', source: 'node-specialist-catalogo', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-citas-output', source: 'node-specialist-citas', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-generic-output', source: 'node-generic', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
 ];
 
+// ─── Store interface ───────────────────────────────────────────────────────────
 interface WorkflowStore {
-  // React Flow state
   nodes: Node<WorkflowNodeData>[];
   edges: Edge[];
-
-  // Workflow metadata
   meta: WorkflowMeta;
 
-  // Chat/playground state
+  // Selection (for properties panel)
+  selectedNodeId: string | null;
+
+  // Pipeline debug state (populated by orchestrator SSE event)
+  pipelineState: PipelineState | null;
+
+  // Chat / playground
   messages: ChatMessage[];
   isStreaming: boolean;
 
-  // React Flow controlled-flow handlers
+  // React Flow handlers
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
@@ -116,6 +177,13 @@ interface WorkflowStore {
   // Node mutations
   addNode: (node: Node<WorkflowNodeData>) => void;
   updateNodeConfig: (id: string, config: Partial<WorkflowNodeData['config']>) => void;
+  updateNodeMeta: (id: string, meta: { label?: string; subtitle?: string }) => void;
+
+  // Selection
+  setSelectedNode: (id: string | null) => void;
+
+  // Pipeline
+  setPipelineState: (state: PipelineState | null) => void;
 
   // Chat mutations
   addMessage: (message: ChatMessage) => void;
@@ -124,14 +192,17 @@ interface WorkflowStore {
   resetMessages: () => void;
 }
 
+// ─── Store implementation ──────────────────────────────────────────────────────
 export const useWorkflowStore = create<WorkflowStore>((set) => ({
   nodes: INITIAL_NODES,
   edges: INITIAL_EDGES,
   meta: {
-    name: 'Customer Support Workflow',
+    name: 'Concesionaria AutoMóvil Premium',
     status: 'active',
-    lastEdited: '2m ago',
+    lastEdited: 'hace 2 min',
   },
+  selectedNodeId: null,
+  pipelineState: null,
   messages: [],
   isStreaming: false,
 
@@ -161,6 +232,26 @@ export const useWorkflowStore = create<WorkflowStore>((set) => ({
       ),
     })),
 
+  updateNodeMeta: (id, { label, subtitle }) =>
+    set((state) => ({
+      nodes: state.nodes.map((n) =>
+        n.id === id
+          ? {
+            ...n,
+            data: {
+              ...n.data,
+              ...(label !== undefined && { label }),
+              ...(subtitle !== undefined && { subtitle }),
+            },
+          }
+          : n
+      ),
+    })),
+
+  setSelectedNode: (id) => set({ selectedNodeId: id }),
+
+  setPipelineState: (pipelineState) => set({ pipelineState }),
+
   addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, message] })),
 
@@ -176,5 +267,5 @@ export const useWorkflowStore = create<WorkflowStore>((set) => ({
 
   setIsStreaming: (value) => set({ isStreaming: value }),
 
-  resetMessages: () => set({ messages: [] }),
+  resetMessages: () => set({ messages: [], pipelineState: null }),
 }));
