@@ -76,10 +76,10 @@ export default function Header() {
                         {isPlaygroundVisible ? 'Stop' : 'Execute'}
                     </span>
                 </button>
-                <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
+                {/* <button className="flex items-center justify-center rounded-lg h-9 px-3 bg-primary hover:bg-primary/90 text-white transition-colors shadow-lg shadow-primary/20">
                     <span className="material-symbols-outlined text-[20px] mr-2">rocket_launch</span>
                     <span className="text-sm font-bold">Deploy Agent</span>
-                </button>
+                </button> */}
                 <div className="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
                 <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
                 <button onClick={handleImportClick} className="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors" title="Import Workflow">
