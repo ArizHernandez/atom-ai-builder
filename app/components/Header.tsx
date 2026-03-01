@@ -1,3 +1,5 @@
+import ThemeToggle from "./ThemeToggle";
+
 export default function Header() {
     return (
         <header className="flex shrink-0 items-center justify-between border-b border-solid border-slate-200 dark:border-border-dark px-6 py-3 bg-white dark:bg-background-dark z-20">
@@ -17,6 +19,7 @@ export default function Header() {
                     <span className="text-sm font-bold">Deploy Agent</span>
                 </button>
                 <div className="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
+                <ThemeToggle />
                 <button className="size-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-border-dark hover:bg-slate-200 dark:hover:bg-[#3b4154] text-slate-600 dark:text-slate-300 transition-colors">
                     <span className="material-symbols-outlined text-[20px]">settings</span>
                 </button>
