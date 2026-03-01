@@ -2,6 +2,7 @@
 
 export type NodeType =
   | 'start'
+  | 'telegram'
   | 'memory'
   | 'orchestrator'
   | 'validator'

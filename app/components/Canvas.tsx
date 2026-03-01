@@ -17,8 +17,9 @@ import type { WorkflowNodeData, NodeType } from '@/app/types/workflow';
 
 // Register all node types — all share the same custom component
 const nodeTypes: NodeTypes = {
-  start: WorkflowNodeComponent,
-  memory: WorkflowNodeComponent,
+  start:        WorkflowNodeComponent,
+  telegram:     WorkflowNodeComponent,
+  memory:       WorkflowNodeComponent,
   orchestrator: WorkflowNodeComponent,
   validator: WorkflowNodeComponent,
   specialist: WorkflowNodeComponent,
