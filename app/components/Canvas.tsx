@@ -27,6 +27,7 @@ const nodeTypes: NodeTypes = {
   tool: WorkflowNodeComponent,
   output: WorkflowNodeComponent,
   extension: WorkflowNodeComponent,
+  telegram: WorkflowNodeComponent,
 };
 
 function FlowCanvas() {
