@@ -1,0 +1,130 @@
+{
+  "dealership": {
+    "name": "AutoMóvil Premium",
+    "address": "Av. Insurgentes Sur 1234, Ciudad de México",
+    "phone": "+52 55 1234 5678",
+    "email": "ventas@automovil-premium.com",
+    "hours": "Lunes-Sábado 9:00-19:00 | Domingo 10:00-15:00"
+  },
+  "inventory": [
+    {
+      "id": "VH001",
+      "make": "Toyota",
+      "model": "RAV4",
+      "year": 2024,
+      "type": "SUV",
+      "price": 589000,
+      "currency": "MXN",
+      "color": "Blanco Perla",
+      "available": true,
+      "stock": 3,
+      "features": ["AWD", "Pantalla 10.5\"", "Apple CarPlay / Android Auto", "Asientos de cuero", "Techo panorámico", "Asistente de carril", "Cámara 360°"],
+      "financing": { "monthly_payment": 8200, "months": 48, "down_payment": 100000 }
+    },
+    {
+      "id": "VH002",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "type": "Sedan",
+      "price": 445000,
+      "currency": "MXN",
+      "color": "Negro Medianoche",
+      "available": true,
+      "stock": 2,
+      "features": ["Motor V6", "Pantalla 9\"", "Apple CarPlay / Android Auto", "Asientos de tela premium", "Cámara 360°", "Control de crucero adaptativo"],
+      "financing": { "monthly_payment": 6100, "months": 48, "down_payment": 80000 }
+    },
+    {
+      "id": "VH003",
+      "make": "Toyota",
+      "model": "Hilux",
+      "year": 2024,
+      "type": "Pickup",
+      "price": 620000,
+      "currency": "MXN",
+      "color": "Gris Oscuro",
+      "available": true,
+      "stock": 1,
+      "features": ["4x4", "Motor Diesel 2.8L", "Capacidad de carga 1 ton", "Pantalla 9\"", "Control de tracción", "Enganche de remolque"],
+      "financing": { "monthly_payment": 8800, "months": 48, "down_payment": 110000 }
+    },
+    {
+      "id": "VH004",
+      "make": "Honda",
+      "model": "CR-V",
+      "year": 2024,
+      "type": "SUV",
+      "price": 520000,
+      "currency": "MXN",
+      "color": "Azul Metálico",
+      "available": true,
+      "stock": 4,
+      "features": ["Híbrido", "Pantalla 9\"", "Honda Sensing", "Asientos de cuero", "Techo corredizo", "Ahorro: 18 km/l"],
+      "financing": { "monthly_payment": 7300, "months": 48, "down_payment": 90000 }
+    },
+    {
+      "id": "VH005",
+      "make": "Honda",
+      "model": "Civic",
+      "year": 2024,
+      "type": "Sedan",
+      "price": 380000,
+      "currency": "MXN",
+      "color": "Rojo Radiante",
+      "available": false,
+      "stock": 0,
+      "features": ["Motor Turbo 1.5L", "Pantalla 9\"", "Honda Sensing", "Techo Solar", "Asientos deportivos"],
+      "financing": { "monthly_payment": 5200, "months": 48, "down_payment": 70000 }
+    },
+    {
+      "id": "VH006",
+      "make": "Nissan",
+      "model": "Frontier",
+      "year": 2024,
+      "type": "Pickup",
+      "price": 560000,
+      "currency": "MXN",
+      "color": "Blanco Glaciar",
+      "available": true,
+      "stock": 2,
+      "features": ["4x4", "Motor V6 3.8L", "Pantalla 8\"", "Cámara trasera", "Apple CarPlay", "Suspensión reforzada"],
+      "financing": { "monthly_payment": 7800, "months": 48, "down_payment": 100000 }
+    },
+    {
+      "id": "VH007",
+      "make": "Chevrolet",
+      "model": "Equinox EV",
+      "year": 2024,
+      "type": "SUV",
+      "price": 490000,
+      "currency": "MXN",
+      "color": "Gris Platino",
+      "available": true,
+      "stock": 2,
+      "features": ["100% Eléctrico", "Pantalla 11\"", "Autonomía 490 km", "OnStar", "Carga rápida DC 150kW", "Calefacción de asientos"],
+      "financing": { "monthly_payment": 6800, "months": 48, "down_payment": 85000 }
+    },
+    {
+      "id": "VH008",
+      "make": "Volkswagen",
+      "model": "Tiguan",
+      "year": 2024,
+      "type": "SUV",
+      "price": 540000,
+      "currency": "MXN",
+      "color": "Plata Reflex",
+      "available": true,
+      "stock": 3,
+      "features": ["Motor Turbo 1.4L TSI", "Pantalla 8\"", "Carplay/Android Auto", "Asientos de cuero", "Techo panorámico", "Frenado automático de emergencia"],
+      "financing": { "monthly_payment": 7500, "months": 48, "down_payment": 95000 }
+    }
+  ],
+  "test_drive_slots": [
+    { "date": "2026-03-02", "day": "Lunes",    "times": ["10:00", "12:00", "15:00", "17:00"] },
+    { "date": "2026-03-03", "day": "Martes",   "times": ["09:00", "11:00", "14:00", "16:00"] },
+    { "date": "2026-03-04", "day": "Miércoles","times": ["10:00", "13:00", "15:00"] },
+    { "date": "2026-03-05", "day": "Jueves",   "times": ["09:00", "11:00", "14:00", "17:00"] },
+    { "date": "2026-03-07", "day": "Sábado",   "times": ["10:00", "12:00", "15:00", "17:00"] }
+  ]
+}
