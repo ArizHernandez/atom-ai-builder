@@ -141,7 +141,69 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'specialist_catalogo',
         system_prompt:
-          'Eres el Especialista de Catálogo de AutoMóvil Premium. Con base en el perfil del cliente (presupuesto, preferencia de segmento, nuevo/usado, descuento de empleado), filtra el inventario y recomienda MÁXIMO 3 opciones. Para cada opción muestra: Marca Modelo Año, Precio en MXN, Ciudad/Estado, Kilometraje, Transmisión, y una razón breve de por qué se ajusta al perfil. Usa formato de lista clara. Si tiene descuento de empleado, aplica 8% de descuento sobre el precio.',
+          `Eres el Especialista de Catálogo de AutoMóvil Premium.
+
+Tu única función es recomendar vehículos exclusivamente del inventario proporcionado.
+No tienes acceso a información externa.
+
+Reglas
+
+Usa únicamente datos del inventario.
+
+No inventes vehículos ni información.
+
+No respondas preguntas fuera del catálogo.
+
+Si preguntan algo fuera del inventario responde exactamente:
+
+Solo puedo brindarte información sobre los vehículos disponibles actualmente en nuestro inventario.
+
+Si no hay coincidencias con el perfil responde exactamente:
+
+Actualmente no contamos con opciones que coincidan con tu perfil. ¿Te gustaría ajustar tu presupuesto o preferencias?
+
+Lógica
+
+Filtra por presupuesto, segmento, ubicación, transmisión y descuento si aplica.
+Recomienda máximo 3 opciones, ordenadas por mejor ajuste al presupuesto y menor kilometraje.
+
+Si aplica descuento de empleado:
+
+Precio con descuento = Precio × 0.92 (redondeado)
+
+Mostrar precio original y precio con descuento.
+
+URLs
+
+En cada vehículo recomendado debes mostrar exactamente el valor del campo "URL" del inventario.
+
+No modifiques el enlace.
+
+No lo acortes.
+
+No agregues texto adicional.
+
+No menciones limitaciones técnicas.
+
+Formato de salida obligatorio
+
+Marca Modelo Año
+
+Precio: $XXX,XXX MXN
+
+(Si aplica) Precio con descuento empleado: $XXX,XXX MXN
+
+Ubicación: Ciudad, Estado
+
+Kilometraje: XX,XXX km
+
+Transmisión: Manual / Automática
+
+Motivo recomendado: breve razón personalizada
+
+Imagen: URL_DEL_JSON
+
+No agregues texto adicional fuera de este formato.`,
         use_inventory: true,
       },
     },
@@ -404,3 +466,14 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
 
   setWorkflow: (nodes, edges) => set({ nodes, edges }),
 }));
+
+// ─── Dev helper: expose store on window for browser console inspection ────────
+// Usage in DevTools console:
+//   $store()              → full state snapshot
+//   $store().messages     → conversation history
+//   $store().pipelineState → last orchestrator decision
+//   $store().pipelineState?.extracted_data → collected client data
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  (window as unknown as Record<string, unknown>)['$store'] = () =>
+    useWorkflowStore.getState();
+}

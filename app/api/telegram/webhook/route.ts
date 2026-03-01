@@ -16,12 +16,12 @@ import OpenAI from 'openai';
 import autosRaw from '@/app/data/autos.json';
 import datesRaw from '@/app/data/dates.json';
 import faqRaw   from '@/app/data/faq.json';
+import { getSession, saveSession, clearSession } from '@/app/lib/telegramSessions';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const openai      = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const BOT_TOKEN   = process.env.TELEGRAM_BOT_TOKEN ?? '';
-const TELEGRAM    = `https://api.telegram.org/bot${BOT_TOKEN}`;
-const MAX_HISTORY = 20; // messages to keep per chat session
+const openai    = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? '';
+const TELEGRAM  = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
 // ─── Telegram types ───────────────────────────────────────────────────────────
 type TelegramMessage = {
@@ -35,21 +35,6 @@ type TelegramUpdate = {
   message?: TelegramMessage;
 };
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
-
-// ─── In-memory session store (per Telegram chat_id) ──────────────────────────
-// Resets on server restart — good enough for a hackathon demo.
-// For persistence, swap with a database (Firestore, Redis, etc.)
-const sessions = new Map<number, ChatMessage[]>();
-
-function getSession(chatId: number): ChatMessage[] {
-  if (!sessions.has(chatId)) sessions.set(chatId, []);
-  return sessions.get(chatId)!;
-}
-
-function saveSession(chatId: number, messages: ChatMessage[]): void {
-  // Keep last N messages to avoid unbounded memory growth
-  sessions.set(chatId, messages.slice(-MAX_HISTORY));
-}
 
 // ─── Telegram API helpers ─────────────────────────────────────────────────────
 async function sendTyping(chatId: number): Promise<void> {
@@ -335,7 +320,7 @@ export async function POST(request: Request): Promise<Response> {
 
     // Handle /start command
     if (userText === '/start') {
-      sessions.delete(chatId); // Clear session on restart
+      clearSession(chatId); // Clear session on restart
       await sendMessage(
         chatId,
         '¡Hola! 👋 Soy el asistente de *AutoMóvil Premium*.\n\nPuedo ayudarte con:\n• 🚗 Catálogo de vehículos y precios\n• 📅 Agendar citas y pruebas de manejo\n• ❓ Consultas sobre la concesionaria\n\n¿En qué te puedo ayudar hoy?'
