@@ -59,6 +59,11 @@
   stroke-width: 2;
 }
 
+.dark .react-flow__controls-button {
+  background-color: #1b1e27;
+  border-color: #282c39;
+}
+
 /* Selected edge */
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: #2559f4;
