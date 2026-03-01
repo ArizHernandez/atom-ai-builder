@@ -7,42 +7,39 @@ import { Button } from '@/app/components/ui/Button';
 
 // ─── Static maps ──────────────────────────────────────────────────────────────
 const TYPE_LABEL: Record<NodeType, string> = {
-  start:        'Start Trigger',
-  telegram:     'Telegram Bot',
-  memory:       'Nodo de Memoria',
+  start: 'Start Trigger',
+  telegram: 'Telegram Bot',
+  memory: 'Nodo de Memoria',
   orchestrator: 'Agente Orquestador',
   validator: 'Agente Validador',
   specialist: 'Agente Especialista',
   generic: 'Agente Genérico',
   tool: 'Tool / JSON',
   output: 'Output',
-  telegram: 'Telegram',
 };
 
 const TYPE_COLOR: Record<NodeType, string> = {
-  start:        'text-blue-500   bg-blue-500/10   border-blue-500/20',
-  telegram:     'text-sky-500    bg-sky-500/10    border-sky-500/20',
-  memory:       'text-violet-500 bg-violet-500/10 border-violet-500/20',
+  start: 'text-blue-500   bg-blue-500/10   border-blue-500/20',
+  telegram: 'text-sky-500    bg-sky-500/10    border-sky-500/20',
+  memory: 'text-violet-500 bg-violet-500/10 border-violet-500/20',
   orchestrator: 'text-[#2559f4]  bg-[#2559f4]/10  border-[#2559f4]/20',
   validator: 'text-amber-500  bg-amber-500/10  border-amber-500/20',
   specialist: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
   generic: 'text-slate-400  bg-slate-500/10  border-slate-500/20',
   tool: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
   output: 'text-green-500  bg-green-500/10  border-green-500/20',
-  telegram: 'text-[#0088cc]  bg-[#0088cc]/10  border-[#0088cc]/20',
 };
 
 const TYPE_ICON: Record<NodeType, string> = {
-  start:        'input',
-  telegram:     'send',
-  memory:       'memory',
+  start: 'input',
+  telegram: 'send',
+  memory: 'memory',
   orchestrator: 'target',
   validator: 'fact_check',
   specialist: 'support_agent',
   generic: 'forum',
   tool: 'dataset',
   output: 'send',
-  telegram: 'send',
 };
 
 // ─── Reusable field styles ────────────────────────────────────────────────────
@@ -120,6 +117,7 @@ export default function PropertiesPanel() {
   const [toolSource, setToolSource] = useState<'inventory' | 'faqs' | 'agenda'>('inventory');
   const [hasRagAddon, setHasRagAddon] = useState(false);
   const [ragFiles, setRagFiles] = useState<RagFile[]>([]);
+  const [botToken, setBotToken] = useState('');
   const [saved, setSaved] = useState(false);
 
   // Sync form when selected node changes
@@ -135,6 +133,7 @@ export default function PropertiesPanel() {
     setToolSource(node.data.config.tool_source ?? 'inventory');
     setHasRagAddon(node.data.config.has_rag_addon ?? false);
     setRagFiles(node.data.config.rag_files ?? []);
+    setBotToken(node.data.config.botToken ?? '');
     setSaved(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNodeId]);
@@ -154,7 +153,13 @@ export default function PropertiesPanel() {
       ...(hasDescription && { description }),
       ...(hasRag && { use_inventory: useInventory, use_faqs: useFaqs, use_agenda: useAgenda, has_rag_addon: hasRagAddon, rag_files: ragFiles }),
       ...(type === 'tool' && { tool_source: toolSource }),
+      ...(type === 'telegram' && { botToken }),
     });
+
+    if (type === 'telegram' && botToken && useWorkflowStore.getState().invalidNodeId === node.id) {
+      useWorkflowStore.getState().setInvalidNodeId(null);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2200);
   };
@@ -241,22 +246,28 @@ export default function PropertiesPanel() {
               </p>
             </div>
 
-            {/* Variables de entorno */}
+            {/* Credenciales obligatorias */}
             <div>
-              <SectionTitle>Variables de Entorno</SectionTitle>
-              <div className="space-y-2">
-                {[
-                  { key: 'TELEGRAM_BOT_TOKEN', hint: 'Obtén en @BotFather' },
-                  { key: 'NEXT_PUBLIC_APP_URL', hint: 'URL pública de tu app' },
-                ].map(({ key, hint }) => (
-                  <div key={key} className="p-2.5 bg-slate-50 dark:bg-[#101422] rounded-lg border border-slate-200 dark:border-[#282c39]">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <code className="text-xs font-mono text-sky-500">{key}</code>
-                      <span className="size-1.5 rounded-full bg-amber-400" title="Pendiente de configurar" />
-                    </div>
-                    <p className="text-[10px] text-slate-400">{hint}</p>
-                  </div>
-                ))}
+              <SectionTitle>Credenciales</SectionTitle>
+              <div className="space-y-3 mt-2">
+                <div>
+                  <FieldLabel>Telegram Bot Token <span className="text-red-500">*</span></FieldLabel>
+                  <input
+                    type="password"
+                    className={INPUT_CLS}
+                    value={botToken}
+                    onChange={(e) => {
+                      setBotToken(e.target.value);
+                      if (useWorkflowStore.getState().invalidNodeId === node.id) {
+                        useWorkflowStore.getState().setInvalidNodeId(null);
+                      }
+                    }}
+                    placeholder="1234567890:AAH_xyz..."
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Obligatorio para ejecutar el flujo con este nodo. Consíguelo en @BotFather.
+                  </p>
+                </div>
               </div>
             </div>
 

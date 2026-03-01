@@ -319,6 +319,9 @@ interface WorkflowStore {
   // Selection (for properties panel)
   selectedNodeId: string | null;
 
+  // Validation
+  invalidNodeId: string | null;
+
   // Pipeline debug state (populated by orchestrator SSE event)
   pipelineState: PipelineState | null;
 
@@ -340,6 +343,9 @@ interface WorkflowStore {
 
   // Selection
   setSelectedNode: (id: string | null) => void;
+
+  // Validation
+  setInvalidNodeId: (id: string | null) => void;
 
   // Pipeline
   setPipelineState: (state: PipelineState | null) => void;
@@ -370,6 +376,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     lastEdited: 'hace 2 min',
   },
   selectedNodeId: null,
+  invalidNodeId: null,
   pipelineState: null,
   isPlaygroundVisible: false,
   messages: [],
@@ -420,6 +427,8 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
     })),
 
   setSelectedNode: (id) => set({ selectedNodeId: id }),
+
+  setInvalidNodeId: (id) => set({ invalidNodeId: id }),
 
   setPipelineState: (pipelineState) => set({ pipelineState }),
 

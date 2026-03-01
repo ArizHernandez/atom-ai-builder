@@ -3,6 +3,7 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { NodeProps } from '@xyflow/react';
+import { useWorkflowStore } from '@/app/store/workflowStore';
 import type { WorkflowNodeData, NodeType } from '@/app/types/workflow';
 
 // ─── Visual config per node type ──────────────────────────────────────────────
@@ -239,12 +240,17 @@ function NodeBody({ data }: { data: WorkflowNodeData }) {
 export function WorkflowNodeComponent({ data: rawData, selected }: NodeProps) {
   const data = rawData as WorkflowNodeData;
   const visual = NODE_VISUAL_CONFIG[data.type] ?? NODE_VISUAL_CONFIG.start;
+  const invalidNodeId = useWorkflowStore((s) => s.invalidNodeId);
 
-  const borderClass = selected
-    ? 'border-[#2559f4] ring-2 ring-[#2559f4]/40'
-    : data.type === 'orchestrator'
-      ? 'border-[#2559f4]/40 ring-1 ring-[#2559f4]/20'
-      : 'border-slate-200 dark:border-[#282c39]';
+  const isInvalid = invalidNodeId === data.id;
+
+  const borderClass = isInvalid
+    ? 'border-red-500 ring-2 ring-red-500/40'
+    : selected
+      ? 'border-[#2559f4] ring-2 ring-[#2559f4]/40'
+      : data.type === 'orchestrator'
+        ? 'border-[#2559f4]/40 ring-1 ring-[#2559f4]/20'
+        : 'border-slate-200 dark:border-[#282c39]';
 
   const shadowClass =
     data.type === 'orchestrator' ? 'shadow-2xl shadow-[#2559f4]/10' : 'shadow-xl';

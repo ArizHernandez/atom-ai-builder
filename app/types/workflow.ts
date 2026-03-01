@@ -34,6 +34,7 @@ export interface NodeConfig {
   tool_source?: 'inventory' | 'faqs' | 'agenda'; // for tool nodes
   has_rag_addon?: boolean; // indicates if the RAG add-on is active
   rag_files?: RagFile[];   // JSON files uploaded for the RAG add-on
+  botToken?: string;       // Telegram bot token
 }
 
 export interface WorkflowNodeData extends Record<string, unknown> {

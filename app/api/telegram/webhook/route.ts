@@ -15,13 +15,12 @@
 import OpenAI from 'openai';
 import autosRaw from '@/app/data/autos.json';
 import datesRaw from '@/app/data/dates.json';
-import faqRaw   from '@/app/data/faq.json';
+import faqRaw from '@/app/data/faq.json';
 import { getSession, saveSession, clearSession } from '@/app/lib/telegramSessions';
+import { telegramConfig } from '@/app/lib/telegramConfig';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const openai    = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? '';
-const TELEGRAM  = `https://api.telegram.org/bot${BOT_TOKEN}`;
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // ─── Telegram types ───────────────────────────────────────────────────────────
 type TelegramMessage = {
@@ -37,7 +36,13 @@ type TelegramUpdate = {
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
 // ─── Telegram API helpers ─────────────────────────────────────────────────────
+function getTelegramUrl(): string {
+  const token = telegramConfig.botToken || process.env.TELEGRAM_BOT_TOKEN || '';
+  return `https://api.telegram.org/bot${token}`;
+}
+
 async function sendTyping(chatId: number): Promise<void> {
+  const TELEGRAM = getTelegramUrl();
   await fetch(`${TELEGRAM}/sendChatAction`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -50,16 +55,17 @@ async function sendTyping(chatId: number): Promise<void> {
  * Automatically splits messages longer than 4096 chars (Telegram limit).
  */
 async function sendMessage(chatId: number, text: string): Promise<void> {
+  const TELEGRAM = getTelegramUrl();
   const MAX_LEN = 4000;
-  const chunks  = text.match(new RegExp(`.{1,${MAX_LEN}}`, 'gs')) ?? [text];
+  const chunks = text.match(new RegExp(`.{1,${MAX_LEN}}`, 'gs')) ?? [text];
 
   for (const chunk of chunks) {
     await fetch(`${TELEGRAM}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id:    chatId,
-        text:       chunk,
+        chat_id: chatId,
+        text: chunk,
         parse_mode: 'Markdown',
       }),
     });
@@ -73,8 +79,8 @@ type Auto = {
   Ciudad: string; 'Tipo de combustible': string; Motor: number;
   Transmisión: string; Descripción: string; Cantidad: number; URL: string;
 };
-const autos   = (autosRaw as { available_vehicles: Auto[] }).available_vehicles;
-const dates   = datesRaw as { fecha: string; slots: string[] }[];
+const autos = (autosRaw as { available_vehicles: Auto[] }).available_vehicles;
+const dates = datesRaw as { fecha: string; slots: string[] }[];
 const faqCats = (faqRaw as {
   faq_agencia_autos: {
     categoria: string;
@@ -115,8 +121,8 @@ function buildAgendaSummary(): string {
 
 // ─── Orchestration ────────────────────────────────────────────────────────────
 const REQUIRED_FIELDS: Record<string, string[]> = {
-  catalogo:         ['presupuesto', 'preferencia'],
-  citas:            ['nombre', 'fecha_preferida'],
+  catalogo: ['presupuesto', 'preferencia'],
+  citas: ['nombre', 'fecha_preferida'],
   consulta_general: ['cliente_tipo', 'situacion_laboral'],
 };
 
@@ -251,22 +257,22 @@ async function runPipeline(messages: ChatMessage[]): Promise<string> {
   let orch: OrchResult = {};
   try {
     const res = await openai.chat.completions.create({
-      model:           'gpt-4o-mini',
-      stream:          false,
+      model: 'gpt-4o-mini',
+      stream: false,
       response_format: { type: 'json_object' },
-      messages:        [{ role: 'system', content: ORCH_PROMPT }, ...messages],
+      messages: [{ role: 'system', content: ORCH_PROMPT }, ...messages],
     });
     orch = JSON.parse(res.choices[0]?.message?.content ?? '{}') as OrchResult;
   } catch {
     orch = { intent: 'out_of_scope', next_agent: 'generic', requires_validation: false };
   }
 
-  const intent    = orch.intent    ?? 'out_of_scope';
+  const intent = orch.intent ?? 'out_of_scope';
   const nextAgent = orch.next_agent ?? 'generic';
-  const needsVal  = orch.requires_validation ?? true;
+  const needsVal = orch.requires_validation ?? true;
   const extracted = (orch.extracted_data ?? {}) as ExtractedData;
-  const turns     = messages.filter((m) => m.role === 'user').length;
-  const valDone   = isValidationComplete(intent, extracted, turns, needsVal);
+  const turns = messages.filter((m) => m.role === 'user').length;
+  const valDone = isValidationComplete(intent, extracted, turns, needsVal);
 
   // Step 2 — Determine active agent
   let agentRole: 'validator' | 'specialist_catalogo' | 'specialist_citas' | 'specialist_general' | 'generic';
@@ -277,8 +283,8 @@ async function runPipeline(messages: ChatMessage[]): Promise<string> {
     agentRole = 'validator';
   } else {
     const roleMap: Record<string, typeof agentRole> = {
-      catalogo:         'specialist_catalogo',
-      citas:            'specialist_citas',
+      catalogo: 'specialist_catalogo',
+      citas: 'specialist_citas',
       consulta_general: 'specialist_general',
     };
     agentRole = roleMap[intent] ?? 'generic';
@@ -286,9 +292,9 @@ async function runPipeline(messages: ChatMessage[]): Promise<string> {
 
   // Step 3 — Generate response (gpt-4o, non-streaming for Telegram)
   const systemPrompt = buildSystemPrompt(agentRole, intent, extracted);
-  const completion   = await openai.chat.completions.create({
-    model:    'gpt-4o',
-    stream:   false,
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    stream: false,
     messages: [{ role: 'system', content: systemPrompt }, ...messages],
   });
 
@@ -299,18 +305,24 @@ async function runPipeline(messages: ChatMessage[]): Promise<string> {
 export async function POST(request: Request): Promise<Response> {
   // Telegram always expects a 200 OK, even on errors
   try {
+    if (!telegramConfig.isActive) {
+      console.log('[telegram] Webhook skipped: Telegram node not in active flow.');
+      return new Response('OK');
+    }
+
+    const BOT_TOKEN = telegramConfig.botToken || process.env.TELEGRAM_BOT_TOKEN;
     if (!BOT_TOKEN) {
       console.error('[telegram] TELEGRAM_BOT_TOKEN not set');
       return new Response('OK');
     }
 
     const update = (await request.json()) as TelegramUpdate;
-    const msg    = update.message;
+    const msg = update.message;
 
     // Ignore non-text messages (photos, stickers, etc.)
     if (!msg?.text) return new Response('OK');
 
-    const chatId   = msg.chat.id;
+    const chatId = msg.chat.id;
     const userText = msg.text.trim();
 
     // Ignore bot commands (except /start)
@@ -332,7 +344,7 @@ export async function POST(request: Request): Promise<Response> {
     const history = getSession(chatId);
 
     // Show typing indicator (non-blocking)
-    sendTyping(chatId).catch(() => {});
+    sendTyping(chatId).catch(() => { });
 
     // Add user message to history
     history.push({ role: 'user', content: userText });
@@ -357,11 +369,12 @@ export async function POST(request: Request): Promise<Response> {
 
 // ─── GET: Webhook verification (optional, for manual testing) ─────────────────
 export async function GET(): Promise<Response> {
+  const BOT_TOKEN = telegramConfig.botToken || process.env.TELEGRAM_BOT_TOKEN;
   return new Response(
     JSON.stringify({
-      status:  'ok',
+      status: 'ok',
       message: 'Telegram webhook is live. Use POST for updates.',
-      bot:     BOT_TOKEN ? 'configured' : 'NOT configured — set TELEGRAM_BOT_TOKEN',
+      bot: BOT_TOKEN ? 'configured' : 'NOT configured — set TELEGRAM_BOT_TOKEN',
     }),
     { headers: { 'Content-Type': 'application/json' } }
   );

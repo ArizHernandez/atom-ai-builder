@@ -61,7 +61,26 @@ export default function Header() {
                     <span className="text-sm font-bold">Save Draft</span>
                 </button> */}
                 <Button
-                    onClick={() => {
+                    onClick={async () => {
+                        if (!isPlaygroundVisible) {
+                            const telegramNode = nodes.find(n => n.type === 'telegram');
+                            if (telegramNode && !telegramNode.data.config.botToken) {
+                                useWorkflowStore.getState().setInvalidNodeId(telegramNode.id);
+                                alert('El nodo de Telegram requiere un Bot Token para ejecutarse.');
+                                return;
+                            }
+
+                            // Emit config to backend
+                            await fetch('/api/telegram/config', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    isActive: !!telegramNode,
+                                    botToken: telegramNode?.data.config.botToken || ''
+                                })
+                            }).catch(err => console.error('Failed to sync configs', err));
+                        }
+
                         resetMessages();
                         setIsPlaygroundVisible(!isPlaygroundVisible);
                     }}
