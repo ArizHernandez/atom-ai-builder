@@ -55,12 +55,23 @@ export interface PipelineState {
   requires_validation?: boolean;
   is_validation_complete?: boolean;
   extracted_data?: {
-    cliente_tipo?: string | null;
+    // Caso 1 — Consultas Generales
+    cliente_tipo?: string | null;       // 'nuevo' | 'existente'
+    situacion_laboral?: string | null;  // 'asalariado' | 'independiente'
+    edad?: number | null;
+
+    // Caso 2 — Catálogo de Vehículos
     presupuesto?: number | null;
-    preferencia?: string | null;
+    nuevo_o_usado?: string | null;      // 'nuevo' | 'usado'
+    descuento_empleado?: boolean | null;
+    preferencia?: string | null;        // tipo: SUV, Sedán, Pickup, Hatchback
+
+    // Caso 3 — Agendamiento de Cita
     nombre?: string | null;
     fecha_preferida?: string | null;
     hora_preferida?: string | null;
+    motivo?: string | null;             // 'prueba_manejo' | 'asesoria'
+    vehiculo_interes?: string | null;
   };
   reasoning?: string;
 }

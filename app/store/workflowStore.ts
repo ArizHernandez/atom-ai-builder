@@ -15,12 +15,65 @@ import type {
 } from '@xyflow/react';
 import type { WorkflowNodeData, WorkflowMeta, ChatMessage, PipelineState } from '@/app/types/workflow';
 
-// ─── Demo: Concesionaria AutoMóvil Premium ────────────────────────────────────
+// ─── Demo: Concesionaria AutoMóvil Premium — 3 casos de uso completos ─────────
+const ORCH_SYSTEM_PROMPT = `Eres el Orquestador de AutoMóvil Premium. Analiza la intención del cliente y responde ÚNICAMENTE con este JSON (sin markdown):
+{
+  "intent": "catalogo | citas | consulta_general | out_of_scope",
+  "confidence": 0.0-1.0,
+  "next_agent": "validator | specialist | generic",
+  "requires_validation": true/false,
+  "extracted_data": {
+    "cliente_tipo": null,
+    "situacion_laboral": null,
+    "edad": null,
+    "presupuesto": null,
+    "nuevo_o_usado": null,
+    "descuento_empleado": null,
+    "preferencia": null,
+    "nombre": null,
+    "fecha_preferida": null,
+    "hora_preferida": null,
+    "motivo": null,
+    "vehiculo_interes": null
+  },
+  "reasoning": "explicación breve"
+}
+
+Reglas de routing:
+- "catalogo": el cliente pregunta por autos, precios, inventario → next_agent: "validator"
+- "citas": el cliente quiere agendar cita o prueba de manejo → next_agent: "validator"
+- "consulta_general": preguntas sobre la concesionaria, financiamiento, garantías, horarios → next_agent: "validator"
+- "out_of_scope": tema fuera del negocio (política, recetas, etc.) → next_agent: "generic"
+- Si el cliente solo saluda → intent: "out_of_scope", next_agent: "generic", requires_validation: false
+Extrae CUALQUIER dato que el cliente ya haya mencionado y colócalo en extracted_data. Deja null los que no mencionó.`;
+
+const VALIDATOR_DESCRIPTION = `Eres el Agente Validador de AutoMóvil Premium. Tu rol es recopilar los datos necesarios del cliente de forma conversacional y amigable, UN DATO A LA VEZ.
+
+CASO: Catálogo de Vehículos — recopila en este orden:
+1. Presupuesto aproximado (en MXN)
+2. ¿Nuevo o usado?
+3. ¿Cuenta con descuento de empleado? (sí/no)
+4. Preferencia de tipo: Sedán, SUV, Pickup, Hatchback
+
+CASO: Agendamiento de Cita — recopila en este orden:
+1. Nombre completo del cliente
+2. Fecha preferida (ej. 5 de marzo)
+3. Hora preferida (ej. 10am, 3pm)
+4. Motivo: ¿prueba de manejo o asesoría con un vendedor?
+5. Vehículo de interés (si aplica)
+
+CASO: Consultas Generales — recopila en este orden:
+1. ¿Es cliente nuevo o existente?
+2. Situación laboral: ¿asalariado o independiente?
+3. Edad aproximada
+
+Cuando tengas TODOS los datos necesarios para el caso de uso actual, confirma amablemente que ya tienes la información completa y di que procederás a buscar la información.`;
+
 const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-start',
     type: 'start',
-    position: { x: 60, y: 340 },
+    position: { x: 60, y: 460 },
     data: {
       id: 'node-start',
       type: 'start',
@@ -32,7 +85,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-memory',
     type: 'memory',
-    position: { x: 340, y: 340 },
+    position: { x: 340, y: 460 },
     data: {
       id: 'node-memory',
       type: 'memory',
@@ -44,7 +97,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-orchestrator',
     type: 'orchestrator',
-    position: { x: 630, y: 340 },
+    position: { x: 630, y: 460 },
     data: {
       id: 'node-orchestrator',
       type: 'orchestrator',
@@ -52,15 +105,14 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       subtitle: 'Router de intenciones',
       config: {
         agent_role: 'orchestrator',
-        system_prompt:
-          'Eres el Orquestador de AutoMóvil Premium. Analiza la intención del cliente y responde ÚNICAMENTE con JSON:\n{\n  "intent": "catalogo | citas | consulta_general | out_of_scope",\n  "confidence": 0.0-1.0,\n  "next_agent": "validator | specialist | generic",\n  "requires_validation": true/false,\n  "extracted_data": { "cliente_tipo": null, "presupuesto": null, "preferencia": null, "nombre": null, "fecha_preferida": null },\n  "reasoning": "explicación breve"\n}',
+        system_prompt: ORCH_SYSTEM_PROMPT,
       },
     },
   },
   {
     id: 'node-validator',
     type: 'validator',
-    position: { x: 950, y: 140 },
+    position: { x: 950, y: 180 },
     data: {
       id: 'node-validator',
       type: 'validator',
@@ -68,16 +120,19 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       subtitle: 'Recopila datos del cliente',
       config: {
         agent_role: 'validator',
-        description:
-          'Recopila los datos necesarios del cliente de forma conversacional, uno a la vez:\n- Para catálogo: presupuesto, tipo de vehículo (SUV/Sedan/Pickup), ¿nuevo o usado?\n- Para citas: nombre, fecha, hora, vehículo de interés\n- Para consultas: ¿cliente nuevo o existente?, ¿asalariado o independiente?\nSi ya tienes todos los datos, confirma que la información está completa.',
-        validation_fields: ['cliente_tipo', 'presupuesto', 'preferencia'],
+        description: VALIDATOR_DESCRIPTION,
+        validation_fields: [
+          'presupuesto', 'preferencia', 'nuevo_o_usado', 'descuento_empleado', // catálogo
+          'nombre', 'fecha_preferida', 'hora_preferida', 'motivo',             // citas
+          'cliente_tipo', 'situacion_laboral', 'edad',                         // consultas
+        ],
       },
     },
   },
   {
     id: 'node-specialist-catalogo',
     type: 'specialist',
-    position: { x: 950, y: 380 },
+    position: { x: 950, y: 420 },
     data: {
       id: 'node-specialist-catalogo',
       type: 'specialist',
@@ -86,7 +141,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'specialist_catalogo',
         system_prompt:
-          'Eres el Especialista de Catálogo. Filtra el inventario según el perfil del cliente (segmento: SUV/Sedán/Hatchback/Pickup, precio máximo, transmisión, tipo de combustible) y recomienda máximo 3 opciones. Para cada opción muestra: Marca Modelo Año, Precio en MXN, Ciudad/Estado, Kilometraje y una razón breve por qué se ajusta. Sé conciso y usa formato de lista.',
+          'Eres el Especialista de Catálogo de AutoMóvil Premium. Con base en el perfil del cliente (presupuesto, preferencia de segmento, nuevo/usado, descuento de empleado), filtra el inventario y recomienda MÁXIMO 3 opciones. Para cada opción muestra: Marca Modelo Año, Precio en MXN, Ciudad/Estado, Kilometraje, Transmisión, y una razón breve de por qué se ajusta al perfil. Usa formato de lista clara. Si tiene descuento de empleado, aplica 8% de descuento sobre el precio.',
         use_inventory: true,
       },
     },
@@ -94,7 +149,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-specialist-citas',
     type: 'specialist',
-    position: { x: 950, y: 600 },
+    position: { x: 950, y: 650 },
     data: {
       id: 'node-specialist-citas',
       type: 'specialist',
@@ -103,15 +158,32 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'specialist_citas',
         system_prompt:
-          'Eres el Especialista de Citas. Ayuda al cliente a agendar una prueba de manejo o cita con asesor. Usa los horarios disponibles de la agenda. Confirma: nombre del cliente, fecha, hora (en hora local Guatemala UTC-6), vehículo de interés y motivo. Resume la cita antes de confirmar.',
+          'Eres el Especialista de Citas de AutoMóvil Premium. Con los datos del cliente (nombre, fecha, hora, motivo, vehículo de interés), verifica la disponibilidad en la agenda y confirma la cita. Si el horario solicitado no está disponible, sugiere la alternativa más cercana. Muestra un resumen de la cita confirmada con: nombre, fecha, hora local (Guatemala, UTC-6), motivo y vehículo de interés. Cierra con un mensaje cálido.',
         use_agenda: true,
+      },
+    },
+  },
+  {
+    id: 'node-specialist-general',
+    type: 'specialist',
+    position: { x: 950, y: 880 },
+    data: {
+      id: 'node-specialist-general',
+      type: 'specialist',
+      label: 'Especialista Consultas',
+      subtitle: 'FAQs personalizadas',
+      config: {
+        agent_role: 'specialist_general',
+        system_prompt:
+          'Eres el Especialista de Consultas de AutoMóvil Premium. Responde preguntas sobre horarios, ubicación, proceso de compra, financiamiento y garantías usando las FAQs. PERSONALIZA la respuesta según el perfil del cliente:\n- Cliente nuevo + asalariado joven (<30 años): enfatiza financiamiento accesible, cuotas bajas, sin historial crediticio requerido.\n- Cliente existente: destaca beneficios de lealtad, mantenimiento preferencial.\n- Independiente: menciona opciones de comprobantes de ingresos alternativos.\nNo des la misma respuesta genérica a todos — adapta el tono y contenido al perfil.',
+        use_faqs: true,
       },
     },
   },
   {
     id: 'node-generic',
     type: 'generic',
-    position: { x: 950, y: 820 },
+    position: { x: 950, y: 1100 },
     data: {
       id: 'node-generic',
       type: 'generic',
@@ -120,7 +192,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
       config: {
         agent_role: 'generic',
         system_prompt:
-          'Eres un asistente amigable de AutoMóvil Premium. Maneja saludos, despedidas y preguntas generales. Si el tema no es de la concesionaria, redirige amablemente al usuario hacia los servicios que sí ofreces: catálogo de vehículos, citas y consultas.',
+          'Eres un asistente amigable de AutoMóvil Premium. Maneja saludos, despedidas y preguntas generales. Si el tema no es de la concesionaria, redirige amablemente al usuario hacia los servicios que sí ofreces: catálogo de vehículos, agendamiento de citas y consultas generales sobre la concesionaria.',
         use_faqs: true,
       },
     },
@@ -128,7 +200,7 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   {
     id: 'node-output',
     type: 'output',
-    position: { x: 1280, y: 490 },
+    position: { x: 1280, y: 640 },
     data: {
       id: 'node-output',
       type: 'output',
@@ -139,17 +211,28 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
   },
 ];
 
-const DUMMY_GENERATED_EDGES: Edge[] = [
-  { id: 'e-start-memory', source: 'node-start', target: 'node-memory', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-memory-orch', source: 'node-memory', target: 'node-orchestrator', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-orch-validator', source: 'node-orchestrator', target: 'node-validator', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-catalogo', source: 'node-orchestrator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-citas', source: 'node-orchestrator', target: 'node-specialist-citas', type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-orch-generic', source: 'node-orchestrator', target: 'node-generic', type: 'smoothstep', style: { stroke: '#6b7280', strokeWidth: 2, strokeDasharray: '5 3' } },
-  { id: 'e-validator-catalogo', source: 'node-validator', target: 'node-specialist-catalogo', type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
-  { id: 'e-catalogo-output', source: 'node-specialist-catalogo', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-citas-output', source: 'node-specialist-citas', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
-  { id: 'e-generic-output', source: 'node-generic', target: 'node-output', type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+const INITIAL_EDGES: Edge[] = [
+  // Flujo principal
+  { id: 'e-start-memory',        source: 'node-start',                 target: 'node-memory',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-memory-orch',         source: 'node-memory',                target: 'node-orchestrator',          type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+
+  // Orquestador → agentes (líneas punteadas = decisión condicional)
+  { id: 'e-orch-validator',      source: 'node-orchestrator',          target: 'node-validator',             type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-catalogo',       source: 'node-orchestrator',          target: 'node-specialist-catalogo',   type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-citas',          source: 'node-orchestrator',          target: 'node-specialist-citas',      type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-consultas',      source: 'node-orchestrator',          target: 'node-specialist-general',    type: 'smoothstep', style: { stroke: '#8b5cf6', strokeWidth: 2, strokeDasharray: '5 3' } },
+  { id: 'e-orch-generic',        source: 'node-orchestrator',          target: 'node-generic',               type: 'smoothstep', style: { stroke: '#6b7280', strokeWidth: 2, strokeDasharray: '5 3' } },
+
+  // Validador → especialistas (datos completos)
+  { id: 'e-validator-catalogo',  source: 'node-validator',             target: 'node-specialist-catalogo',   type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-validator-citas',     source: 'node-validator',             target: 'node-specialist-citas',      type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+  { id: 'e-validator-general',   source: 'node-validator',             target: 'node-specialist-general',    type: 'smoothstep', style: { stroke: '#f59e0b', strokeWidth: 2 } },
+
+  // Especialistas → output
+  { id: 'e-catalogo-output',     source: 'node-specialist-catalogo',   target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-citas-output',        source: 'node-specialist-citas',      target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-consultas-output',    source: 'node-specialist-general',    target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-generic-output',      source: 'node-generic',               target: 'node-output',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
 ];
 
 // ─── Store interface ───────────────────────────────────────────────────────────
@@ -291,8 +374,8 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
         // Once all nodes are added, add edges progressively
         let edgeIndex = 0;
         const addNextEdge = () => {
-          if (edgeIndex < DUMMY_GENERATED_EDGES.length) {
-            set((state) => ({ edges: [...state.edges, DUMMY_GENERATED_EDGES[edgeIndex]] }));
+          if (edgeIndex < INITIAL_EDGES.length) {
+            set((state) => ({ edges: [...state.edges, INITIAL_EDGES[edgeIndex]] }));
             edgeIndex++;
             setTimeout(addNextEdge, 200); // 200ms delay between edges
           } else {
