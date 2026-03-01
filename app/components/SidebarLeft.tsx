@@ -24,6 +24,15 @@ const DRAGGABLE_NODES: DraggableNode[] = [
     category: 'Core Flow',
   },
   {
+    type: 'telegram',
+    label: 'Telegram Bot',
+    subtitle: 'Canal de mensajería',
+    icon: 'send',
+    iconColor: 'text-sky-500',
+    category: 'Core Flow',
+    highlighted: true,
+  },
+  {
     type: 'output',
     label: 'Response Output',
     subtitle: 'Mensaje saliente',

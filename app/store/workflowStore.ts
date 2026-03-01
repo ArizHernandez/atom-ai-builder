@@ -83,6 +83,18 @@ const INITIAL_NODES: Node<WorkflowNodeData>[] = [
     },
   },
   {
+    id: 'node-telegram',
+    type: 'telegram',
+    position: { x: 60, y: 650 },
+    data: {
+      id: 'node-telegram',
+      type: 'telegram',
+      label: 'Canal Telegram',
+      subtitle: 'Bot de mensajería',
+      config: {},
+    },
+  },
+  {
     id: 'node-memory',
     type: 'memory',
     position: { x: 340, y: 460 },
@@ -276,6 +288,7 @@ No agregues texto adicional fuera de este formato.`,
 const INITIAL_EDGES: Edge[] = [
   // Flujo principal
   { id: 'e-start-memory',        source: 'node-start',                 target: 'node-memory',                type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
+  { id: 'e-telegram-memory',     source: 'node-telegram',              target: 'node-memory',                type: 'smoothstep', style: { stroke: '#0ea5e9', strokeWidth: 2 } },
   { id: 'e-memory-orch',         source: 'node-memory',                target: 'node-orchestrator',          type: 'smoothstep', style: { stroke: '#3b4154', strokeWidth: 2 } },
 
   // Orquestador → agentes (líneas punteadas = decisión condicional)

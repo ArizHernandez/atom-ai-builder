@@ -7,6 +7,7 @@ import type { NodeType } from '@/app/types/workflow';
 // ─── Static maps ──────────────────────────────────────────────────────────────
 const TYPE_LABEL: Record<NodeType, string> = {
   start:        'Start Trigger',
+  telegram:     'Telegram Bot',
   memory:       'Nodo de Memoria',
   orchestrator: 'Agente Orquestador',
   validator:    'Agente Validador',
@@ -18,6 +19,7 @@ const TYPE_LABEL: Record<NodeType, string> = {
 
 const TYPE_COLOR: Record<NodeType, string> = {
   start:        'text-blue-500   bg-blue-500/10   border-blue-500/20',
+  telegram:     'text-sky-500    bg-sky-500/10    border-sky-500/20',
   memory:       'text-violet-500 bg-violet-500/10 border-violet-500/20',
   orchestrator: 'text-[#2559f4]  bg-[#2559f4]/10  border-[#2559f4]/20',
   validator:    'text-amber-500  bg-amber-500/10  border-amber-500/20',
@@ -29,6 +31,7 @@ const TYPE_COLOR: Record<NodeType, string> = {
 
 const TYPE_ICON: Record<NodeType, string> = {
   start:        'input',
+  telegram:     'send',
   memory:       'memory',
   orchestrator: 'target',
   validator:    'fact_check',
@@ -136,7 +139,7 @@ export default function PropertiesPanel() {
   const hasPrompt = type === 'orchestrator' || type === 'specialist' || type === 'generic';
   const hasDescription = type === 'validator';
   const hasRag = type === 'specialist' || type === 'generic' || type === 'orchestrator';
-  const isReadOnly = type === 'start' || type === 'output' || type === 'memory';
+  const isReadOnly = type === 'start' || type === 'output' || type === 'memory' || type === 'telegram';
 
   const handleSave = () => {
     updateNodeMeta(node.id, { label, subtitle });
@@ -206,11 +209,80 @@ export default function PropertiesPanel() {
         </div>
 
         {/* Read-only info nodes */}
-        {isReadOnly && (
+        {isReadOnly && type !== 'telegram' && (
           <div className="p-3 bg-slate-50 dark:bg-[#101422] rounded-lg border border-slate-200 dark:border-[#282c39] text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             {type === 'start'  && 'Punto de entrada del flujo. Recibe el mensaje entrante del usuario.'}
             {type === 'memory' && 'Recupera y guarda el contexto de la conversación en memoria durante la sesión activa.'}
             {type === 'output' && 'Envía la respuesta final al canal configurado (Web, WhatsApp, Telegram, etc.).'}
+          </div>
+        )}
+
+        {/* Telegram setup panel */}
+        {type === 'telegram' && (
+          <div className="space-y-4">
+            {/* Webhook URL */}
+            <div>
+              <SectionTitle>Webhook URL</SectionTitle>
+              <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-[#101422] rounded-lg border border-slate-200 dark:border-[#282c39]">
+                <span className="material-symbols-outlined text-[16px] text-sky-500 shrink-0">link</span>
+                <code className="text-xs font-mono text-slate-700 dark:text-slate-300 break-all">
+                  /api/telegram/webhook
+                </code>
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                URL completa: <span className="font-mono text-slate-500">https://TU_DOMINIO/api/telegram/webhook</span>
+              </p>
+            </div>
+
+            {/* Variables de entorno */}
+            <div>
+              <SectionTitle>Variables de Entorno</SectionTitle>
+              <div className="space-y-2">
+                {[
+                  { key: 'TELEGRAM_BOT_TOKEN', hint: 'Obtén en @BotFather' },
+                  { key: 'NEXT_PUBLIC_APP_URL', hint: 'URL pública de tu app' },
+                ].map(({ key, hint }) => (
+                  <div key={key} className="p-2.5 bg-slate-50 dark:bg-[#101422] rounded-lg border border-slate-200 dark:border-[#282c39]">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <code className="text-xs font-mono text-sky-500">{key}</code>
+                      <span className="size-1.5 rounded-full bg-amber-400" title="Pendiente de configurar" />
+                    </div>
+                    <p className="text-[10px] text-slate-400">{hint}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Setup steps */}
+            <div>
+              <SectionTitle>Configuración (3 pasos)</SectionTitle>
+              <div className="space-y-2">
+                {[
+                  { num: '1', text: 'Abre Telegram y busca @BotFather', sub: 'Envía /newbot y sigue las instrucciones' },
+                  { num: '2', text: 'Copia el token y agrégalo a .env', sub: 'TELEGRAM_BOT_TOKEN=tu_token_aquí' },
+                  { num: '3', text: 'Registra el webhook', sub: 'GET https://api.telegram.org/bot{TOKEN}/setWebhook?url=TU_DOMINIO/api/telegram/webhook' },
+                ].map(({ num, text, sub }) => (
+                  <div key={num} className="flex gap-3 p-2.5 bg-slate-50 dark:bg-[#101422] rounded-lg border border-slate-200 dark:border-[#282c39]">
+                    <div className="size-5 rounded-full bg-sky-500/20 text-sky-500 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {num}
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-slate-700 dark:text-slate-200">{text}</p>
+                      <p className="text-[10px] text-slate-400 font-mono leading-relaxed mt-0.5 break-all">{sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Dev tip */}
+            <div className="p-3 bg-sky-500/5 rounded-lg border border-sky-500/20 flex gap-2">
+              <span className="material-symbols-outlined text-[16px] text-sky-500 shrink-0 mt-0.5">info</span>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Para desarrollo local usa <span className="font-mono text-sky-500">ngrok http 3000</span> para exponer tu servidor con HTTPS.
+                En producción usa tu dominio de Vercel.
+              </p>
+            </div>
           </div>
         )}
 
