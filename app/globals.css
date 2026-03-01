@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
   --color-primary: #2559f4;
   --color-background-light: #f5f6f8;
   --color-background-dark: #101422;
   --color-surface-dark: #1b1e27;
   --color-border-dark: #282c39;
-  
+
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-body: var(--font-inter), sans-serif;
 
@@ -19,15 +19,18 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #101422; 
+  background: #101422;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #282c39; 
+  background: #282c39;
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b4154; 
+  background: #3b4154;
 }
 
 /* Node connection line simulation */
@@ -40,7 +43,8 @@
 }
 
 .canvas-grid {
-  background-image: radial-gradient(#3b4154 1px, transparent 1px); /* Direct use as requested in original html */
+  background-image: radial-gradient(#3b4154 1px, transparent 1px);
+  /* Direct use as requested in original html */
   background-size: 24px 24px;
 }
 
@@ -71,20 +75,24 @@
   background: #1b1e27;
   border: 1px solid #282c39;
   border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
+
 .react-flow__controls-button {
   background: #1b1e27;
   border-bottom: 1px solid #282c39;
   color: #94a3b8;
   fill: #94a3b8;
 }
+
 .react-flow__controls-button:hover {
   background: #282c39;
 }
+
 .react-flow__controls-button:last-child {
   border-bottom: none;
 }
+
 .react-flow__controls-button svg {
   fill: #94a3b8;
 }
