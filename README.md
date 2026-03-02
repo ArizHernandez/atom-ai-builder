@@ -2,12 +2,6 @@
 
 Plataforma visual para construir y probar agentes de IA conversacionales aplicados a una concesionaria de autos. Construida para el **ATOM DevDay Challenge 2026**.
 
----
-
-## Demo
-
-> Corre localmente en `http://localhost:3000`
-
 ```bash
 # 1. Instalar dependencias
 npm install
@@ -26,6 +20,8 @@ npm run dev
 
 ## Demo
 [Demo Url](https://arline-unstrict-noncosmically.ngrok-free.dev/)
+
+Telegram user: @AutoPremiumAtomBot
 
 
 ### Stack tecnológico
