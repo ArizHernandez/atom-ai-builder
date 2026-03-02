@@ -7,6 +7,7 @@ import { useWorkflowStore } from '../store/workflowStore';
 import basicChatTemplate from '../data/basic-chat.json';
 import supportTemplate from '../data/support.json';
 import ecommerceTemplate from '../data/ecommerce.json';
+import bankingTemplate from '../data/banking.json';
 
 interface ImportWorkflowModalProps {
     isOpen: boolean;
@@ -17,6 +18,7 @@ const templates = [
     { id: 'basic-chat', name: 'Basic Chatbot', description: 'A simple Telegram chatbot workflow', icon: 'smart_toy' },
     { id: 'support', name: 'Customer Support', description: 'Advanced support flow with custom logic', icon: 'support_agent' },
     { id: 'ecommerce', name: 'E-commerce', description: 'Store assistant and order tracking', icon: 'shopping_cart' },
+    { id: 'banking', name: 'Banking Default', description: 'Banking assistant to help customers', icon: 'account_balance' },
     { id: 'blank', name: 'Blank Canvas', description: 'Start from scratch', icon: 'add_circle' },
 ];
 
@@ -60,6 +62,8 @@ export function ImportWorkflowModal({ isOpen, onClose }: ImportWorkflowModalProp
                 setWorkflow(supportTemplate.nodes as any, supportTemplate.edges as any);
             } else if (templateId === 'ecommerce') {
                 setWorkflow(ecommerceTemplate.nodes as any, ecommerceTemplate.edges as any);
+            } else if (templateId === 'banking') {
+                setWorkflow(bankingTemplate.nodes as any, bankingTemplate.edges as any);
             }
             onClose();
         } catch (error) {

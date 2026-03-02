@@ -1,0 +1,262 @@
+{
+    "nodes": [
+        {
+            "id": "node-start",
+            "type": "start",
+            "position": {
+                "x": 60,
+                "y": 460
+            },
+            "data": {
+                "id": "node-start",
+                "type": "start",
+                "label": "Canal Web",
+                "subtitle": "Inicio Banca",
+                "config": {}
+            }
+        },
+        {
+            "id": "node-memory",
+            "type": "memory",
+            "position": {
+                "x": 340,
+                "y": 460
+            },
+            "data": {
+                "id": "node-memory",
+                "type": "memory",
+                "label": "Nodo de Memoria",
+                "subtitle": "Contexto de sesión",
+                "config": {}
+            }
+        },
+        {
+            "id": "node-orchestrator",
+            "type": "orchestrator",
+            "position": {
+                "x": 630,
+                "y": 460
+            },
+            "data": {
+                "id": "node-orchestrator",
+                "type": "orchestrator",
+                "label": "Agente Orquestador",
+                "subtitle": "Router Banca",
+                "config": {
+                    "agent_role": "orchestrator",
+                    "system_prompt": "Eres el Orquestador del Banco. Responde con un JSON."
+                }
+            }
+        },
+        {
+            "id": "node-validator",
+            "type": "validator",
+            "position": {
+                "x": 950,
+                "y": 180
+            },
+            "data": {
+                "id": "node-validator",
+                "type": "validator",
+                "label": "Agente Validador",
+                "subtitle": "Recopila datos",
+                "config": {
+                    "agent_role": "validator",
+                    "description": "Validador Bancario",
+                    "validation_fields": [
+                        "numero_cuenta",
+                        "monto"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "node-specialist-cuentas",
+            "type": "specialist",
+            "position": {
+                "x": 950,
+                "y": 420
+            },
+            "data": {
+                "id": "node-specialist-cuentas",
+                "type": "specialist",
+                "label": "Especialista Cuentas",
+                "subtitle": "Saldos y Movimientos",
+                "config": {
+                    "agent_role": "specialist_cuentas",
+                    "system_prompt": "Eres Especialista en Cuentas.",
+                    "use_inventory": false
+                }
+            }
+        },
+        {
+            "id": "node-specialist-tarjetas",
+            "type": "specialist",
+            "position": {
+                "x": 950,
+                "y": 650
+            },
+            "data": {
+                "id": "node-specialist-tarjetas",
+                "type": "specialist",
+                "label": "Especialista Tarjetas",
+                "subtitle": "Crédito y Promociones",
+                "config": {
+                    "agent_role": "specialist_tarjetas",
+                    "system_prompt": "Eres Especialista de Tarjetas.",
+                    "use_agenda": false
+                }
+            }
+        },
+        {
+            "id": "node-generic",
+            "type": "generic",
+            "position": {
+                "x": 950,
+                "y": 1100
+            },
+            "data": {
+                "id": "node-generic",
+                "type": "generic",
+                "label": "Agente Genérico",
+                "subtitle": "Saludos y fuera de scope",
+                "config": {
+                    "agent_role": "generic",
+                    "system_prompt": "Eres un asistente bancario amigable.",
+                    "use_faqs": false
+                }
+            }
+        },
+        {
+            "id": "node-output",
+            "type": "output",
+            "position": {
+                "x": 1280,
+                "y": 640
+            },
+            "data": {
+                "id": "node-output",
+                "type": "output",
+                "label": "Respuesta Cliente",
+                "subtitle": "Canal Web",
+                "config": {}
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "e-start-memory",
+            "source": "node-start",
+            "target": "node-memory",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-memory-orch",
+            "source": "node-memory",
+            "target": "node-orchestrator",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-orch-validator",
+            "source": "node-orchestrator",
+            "target": "node-validator",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#f59e0b",
+                "strokeWidth": 2,
+                "strokeDasharray": "5 3"
+            }
+        },
+        {
+            "id": "e-orch-cuentas",
+            "source": "node-orchestrator",
+            "target": "node-specialist-cuentas",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#8b5cf6",
+                "strokeWidth": 2,
+                "strokeDasharray": "5 3"
+            }
+        },
+        {
+            "id": "e-orch-tarjetas",
+            "source": "node-orchestrator",
+            "target": "node-specialist-tarjetas",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#8b5cf6",
+                "strokeWidth": 2,
+                "strokeDasharray": "5 3"
+            }
+        },
+        {
+            "id": "e-orch-generic",
+            "source": "node-orchestrator",
+            "target": "node-generic",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#6b7280",
+                "strokeWidth": 2,
+                "strokeDasharray": "5 3"
+            }
+        },
+        {
+            "id": "e-validator-cuentas",
+            "source": "node-validator",
+            "target": "node-specialist-cuentas",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#f59e0b",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-validator-tarjetas",
+            "source": "node-validator",
+            "target": "node-specialist-tarjetas",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#f59e0b",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-cuentas-output",
+            "source": "node-specialist-cuentas",
+            "target": "node-output",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-tarjetas-output",
+            "source": "node-specialist-tarjetas",
+            "target": "node-output",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-generic-output",
+            "source": "node-generic",
+            "target": "node-output",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        }
+    ]
+}
