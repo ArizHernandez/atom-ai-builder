@@ -181,10 +181,7 @@ export default function SidebarLeft({ initialNodes = [] }: { initialNodes: Dragg
                     key={node.label}
                     draggable
                     onDragStart={(e) => onDragStart(e, node)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-grab active:cursor-grabbing group transition-colors select-none ${node.highlighted
-                      ? 'bg-[#2559f4]/10 dark:bg-[#2559f4]/20 border border-[#2559f4]/20'
-                      : 'hover:bg-slate-100 dark:hover:bg-[#282c39]'
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-grab active:cursor-grabbing group transition-colors select-none hover:bg-slate-100 dark:hover:bg-[#282c39]`}
                   >
                     <span
                       className={`material-symbols-outlined ${node.iconColor} group-hover:scale-110 transition-transform`}

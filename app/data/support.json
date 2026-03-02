@@ -1,0 +1,193 @@
+{
+    "nodes": [
+        {
+            "id": "node-start",
+            "type": "start",
+            "position": {
+                "x": 60,
+                "y": 460
+            },
+            "data": {
+                "id": "node-start",
+                "type": "start",
+                "label": "Canal Web",
+                "subtitle": "Mensaje entrante",
+                "config": {}
+            }
+        },
+        {
+            "id": "node-telegram",
+            "type": "telegram",
+            "position": {
+                "x": 60,
+                "y": 650
+            },
+            "data": {
+                "id": "node-telegram",
+                "type": "telegram",
+                "label": "Canal Telegram",
+                "subtitle": "Bot de mensajería",
+                "config": {}
+            }
+        },
+        {
+            "id": "node-memory",
+            "type": "memory",
+            "position": {
+                "x": 340,
+                "y": 460
+            },
+            "data": {
+                "id": "node-memory",
+                "type": "memory",
+                "label": "Nodo de Memoria",
+                "subtitle": "Contexto de sesión",
+                "config": {}
+            }
+        },
+        {
+            "id": "node-orchestrator",
+            "type": "orchestrator",
+            "position": {
+                "x": 630,
+                "y": 460
+            },
+            "data": {
+                "id": "node-orchestrator",
+                "type": "orchestrator",
+                "label": "Agente Orquestador",
+                "subtitle": "Router de intenciones",
+                "config": {
+                    "agent_role": "orchestrator",
+                    "system_prompt": "Eres el Orquestador. Responde con un JSON."
+                }
+            }
+        },
+        {
+            "id": "node-specialist-general",
+            "type": "specialist",
+            "position": {
+                "x": 950,
+                "y": 250
+            },
+            "data": {
+                "id": "node-specialist-general",
+                "type": "specialist",
+                "label": "Especialista Consultas",
+                "subtitle": "FAQs personalizadas",
+                "config": {
+                    "agent_role": "specialist_general",
+                    "system_prompt": "Eres el Especialista de Consultas.",
+                    "use_faqs": true
+                }
+            }
+        },
+        {
+            "id": "node-generic",
+            "type": "generic",
+            "position": {
+                "x": 950,
+                "y": 460
+            },
+            "data": {
+                "id": "node-generic",
+                "type": "generic",
+                "label": "Agente Genérico",
+                "subtitle": "Saludos y fuera de scope",
+                "config": {
+                    "agent_role": "generic",
+                    "system_prompt": "Eres un asistente amigable.",
+                    "use_faqs": false
+                }
+            }
+        },
+        {
+            "id": "node-output",
+            "type": "output",
+            "position": {
+                "x": 1280,
+                "y": 460
+            },
+            "data": {
+                "id": "node-output",
+                "type": "output",
+                "label": "Respuesta al Cliente",
+                "subtitle": "Canal Web",
+                "config": {}
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "e-start-memory",
+            "source": "node-start",
+            "target": "node-memory",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-telegram-memory",
+            "source": "node-telegram",
+            "target": "node-memory",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#0ea5e9",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-memory-orch",
+            "source": "node-memory",
+            "target": "node-orchestrator",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-orch-consultas",
+            "source": "node-orchestrator",
+            "target": "node-specialist-general",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#8b5cf6",
+                "strokeWidth": 2,
+                "strokeDasharray": "5 3"
+            }
+        },
+        {
+            "id": "e-orch-generic",
+            "source": "node-orchestrator",
+            "target": "node-generic",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#f59e0b",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-consultas-output",
+            "source": "node-specialist-general",
+            "target": "node-output",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        },
+        {
+            "id": "e-generic-output",
+            "source": "node-generic",
+            "target": "node-output",
+            "type": "smoothstep",
+            "style": {
+                "stroke": "#3b4154",
+                "strokeWidth": 2
+            }
+        }
+    ]
+}

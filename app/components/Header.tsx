@@ -1,13 +1,15 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import ThemeToggle from "./ThemeToggle";
 import { useWorkflowStore } from '@/app/store/workflowStore';
 import { Button } from '@/app/components/ui/Button';
+import { ImportWorkflowModal } from './ImportWorkflowModal';
 
 export default function Header() {
     const { nodes, edges, setWorkflow, isPlaygroundVisible, setIsPlaygroundVisible, resetMessages } = useWorkflowStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     const handleExport = () => {
         const data = JSON.stringify({ nodes, edges }, null, 2);
@@ -21,31 +23,7 @@ export default function Header() {
     };
 
     const handleImportClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const content = e.target?.result as string;
-                    const parsed = JSON.parse(content);
-                    if (parsed.nodes && parsed.edges) {
-                        setWorkflow(parsed.nodes, parsed.edges);
-                    } else {
-                        alert('Invalid workflow file format');
-                    }
-                } catch (error) {
-                    alert('Error reading file');
-                }
-            };
-            reader.readAsText(file);
-        }
-        if (event.target) {
-            event.target.value = '';
-        }
+        setIsImportModalOpen(true);
     };
     return (
         <header className="flex shrink-0 items-center justify-between border-b border-solid border-slate-200 dark:border-border-dark px-6 py-3 bg-white dark:bg-background-dark z-20">
@@ -95,7 +73,6 @@ export default function Header() {
                     <span className="text-sm font-bold">Deploy Agent</span>
                 </button> */}
                 <div className="w-px h-6 bg-slate-200 dark:bg-border-dark mx-1"></div>
-                <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleFileChange} />
                 <Button
                     variant="secondary"
                     size="icon"
@@ -124,6 +101,7 @@ export default function Header() {
                     <img alt="User" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGpbzWHjsQKtMTaRr4-fQwKKG7lvnqY2ZUXEb3v6e9qLNzrLN10CVX3qdXb97xiuS_DV5ZzCXEEG7-86a8M-QQBCk3ymlHUpnnznHnUNVzVF5gZVC-z0F-7cOaSJ9GGsq7ZOXesPGXPIXmT6qsJczSZ5Zf6PsoaOULQAK9KE_o5DyLm6Zm64A6vJK1_eDGSubNXrrnk8K9V0nGoazzkJXLRZ_zjgGVG6lKuIz5sy_Z9XIi3nd4jfcTwK4GAKwLyanPE6xUQG5vpoQ" />
                 </div> */}
             </div>
+            <ImportWorkflowModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
         </header>
     );
 }
