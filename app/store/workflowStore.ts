@@ -371,7 +371,7 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
   nodes: INITIAL_NODES.slice(0, 1), // Start only with the first node
   edges: [],
   meta: {
-    name: 'Concesionaria AutoMóvil Premium',
+    name: 'Canvas',
     status: 'active',
     lastEdited: 'hace 2 min',
   },
